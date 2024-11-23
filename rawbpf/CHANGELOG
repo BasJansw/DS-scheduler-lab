@@ -1,0 +1,33 @@
+# Changelog
+
+# 0.1.6
+
+- Add `errno.h` header
+
+# 0.1.5
+
+- Updated jextract version
+- Cleaned up generation code (jextract accept all code unmodified now)
+  - adds defines
+- Include more Linux header
+
+# 0.1.4
+
+### Removed
+- Removed the wrappers
+
+# 0.1.3
+
+### Added
+- Wrappers for the btf functions because most are `static inline` and therefore omitted
+
+# 0.1.2
+
+### Added
+- BTF functions
+
+## 0.1.1
+
+### Changed
+
+- Moved to JDK 22 from JDK 21
