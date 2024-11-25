@@ -401,3 +401,5 @@ kprobe*
 vmlinux*
 **/jextract-*
 .bpf.compile.cache
+
+renaissance-gpl-0.16.0.jar
