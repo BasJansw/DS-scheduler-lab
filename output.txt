@@ -1,0 +1,32 @@
+Benchmark: ====== reactors (concurrency) [default], iteration 0 started ======
+Benchmark: GC before operation: completed in 48.080 ms, heap usage 16.080 MB -> 5.151 MB.
+Benchmark: Baseline workload: Reactor scheduling events
+Benchmark: BigBench workload: Many-to-many message ping pong
+Benchmark: CountingActor workload: Single reactor event processing
+Benchmark: Fibonacci workload: Dynamic reactor mix with varying lifetimes
+Benchmark: ForkJoinCreation workload: Reactor creation performance
+Benchmark: ForkJoinThroughput workload: Reactor processing performance
+Benchmark: PingPong workload: Reactor pair sequential ping pong performance
+Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
+Benchmark: Roundabout workload: Many channels reactor performance
+Benchmark: ThreadRing workload: Reactor ring forwarding performance
+Benchmark: ====== reactors (concurrency) [default], iteration 0 completed (39437.773 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 1 started ======
+Benchmark: GC before operation: completed in 44.623 ms, heap usage 514.031 MB -> 6.448 MB.
+Benchmark: Baseline workload: Reactor scheduling events
+Benchmark: BigBench workload: Many-to-many message ping pong
+Benchmark: CountingActor workload: Single reactor event processing
+Benchmark: Fibonacci workload: Dynamic reactor mix with varying lifetimes
+Benchmark: ForkJoinCreation workload: Reactor creation performance
+Benchmark: ForkJoinThroughput workload: Reactor processing performance
+Benchmark: PingPong workload: Reactor pair sequential ping pong performance
+Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
+Benchmark: Roundabout workload: Many channels reactor performance
+Benchmark: ThreadRing workload: Reactor ring forwarding performance
+Benchmark: ====== reactors (concurrency) [default], iteration 1 completed (32194.267 ms) ======
+Benchmark: ====== dotty (scala) [default], iteration 0 started ======
+Benchmark: GC before operation: completed in 74.974 ms, heap usage 689.273 MB -> 9.091 MB.
+Benchmark: ====== dotty (scala) [default], iteration 0 completed (49958.494 ms) ======
+Benchmark: ====== dotty (scala) [default], iteration 1 started ======
+Benchmark: GC before operation: completed in 174.555 ms, heap usage 74.412 MB -> 26.469 MB.
+Benchmark: ====== dotty (scala) [default], iteration 1 completed (21697.764 ms) ======
