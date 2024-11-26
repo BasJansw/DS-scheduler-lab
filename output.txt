@@ -1,32 +1,107 @@
+Scheduler: Stats:
 Benchmark: ====== reactors (concurrency) [default], iteration 0 started ======
-Benchmark: GC before operation: completed in 48.080 ms, heap usage 16.080 MB -> 5.151 MB.
+Benchmark: GC before operation: completed in 58.343 ms, heap usage 15.745 MB -> 5.116 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: CountingActor workload: Single reactor event processing
 Benchmark: Fibonacci workload: Dynamic reactor mix with varying lifetimes
+Scheduler: 2072425
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 2737396
 Benchmark: ForkJoinCreation workload: Reactor creation performance
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: ForkJoinThroughput workload: Reactor processing performance
 Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
+Scheduler: 3049846
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: Roundabout workload: Many channels reactor performance
+Scheduler: 3049708
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 0 completed (39437.773 ms) ======
+Scheduler: 2613025
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 2606012
+Scheduler: Stats:
+Benchmark: ====== reactors (concurrency) [default], iteration 0 completed (63026.293 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 1 started ======
-Benchmark: GC before operation: completed in 44.623 ms, heap usage 514.031 MB -> 6.448 MB.
+Benchmark: GC before operation: completed in 69.500 ms, heap usage 601.263 MB -> 7.417 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: CountingActor workload: Single reactor event processing
 Benchmark: Fibonacci workload: Dynamic reactor mix with varying lifetimes
+Scheduler: 2749433
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: ForkJoinCreation workload: Reactor creation performance
+Scheduler: 2481427
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: ForkJoinThroughput workload: Reactor processing performance
 Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
+Scheduler: 2355570
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 2378819
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 1 completed (32194.267 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 1 completed (49272.443 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 0 started ======
-Benchmark: GC before operation: completed in 74.974 ms, heap usage 689.273 MB -> 9.091 MB.
-Benchmark: ====== dotty (scala) [default], iteration 0 completed (49958.494 ms) ======
+Benchmark: GC before operation: completed in 104.849 ms, heap usage 620.382 MB -> 10.045 MB.
+Scheduler: 1966410
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 1717239
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 1733246
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 2367927
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 2320789
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Scheduler: 2088169
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Benchmark: ====== dotty (scala) [default], iteration 0 completed (62477.254 ms) ======
+Scheduler: 1747162
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
 Benchmark: ====== dotty (scala) [default], iteration 1 started ======
-Benchmark: GC before operation: completed in 174.555 ms, heap usage 74.412 MB -> 26.469 MB.
-Benchmark: ====== dotty (scala) [default], iteration 1 completed (21697.764 ms) ======
+Benchmark: GC before operation: completed in 350.192 ms, heap usage 94.271 MB -> 27.359 MB.
+Scheduler: 1569005
+Scheduler: Stats:
+Scheduler: 
+Scheduler: Average wait time: 
+Benchmark: ====== dotty (scala) [default], iteration 1 completed (17328.049 ms) ======

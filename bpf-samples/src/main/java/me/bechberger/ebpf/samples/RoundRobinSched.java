@@ -1,25 +1,34 @@
 package me.bechberger.ebpf.samples;
 
-import me.bechberger.ebpf.annotations.Unsigned;
 import me.bechberger.ebpf.annotations.bpf.BPF;
 import me.bechberger.ebpf.annotations.bpf.BPFMapDefinition;
+import me.bechberger.ebpf.annotations.bpf.Property;
 import me.bechberger.ebpf.bpf.BPFProgram;
+import me.bechberger.ebpf.bpf.GlobalVariable;
 import me.bechberger.ebpf.bpf.Scheduler;
 import me.bechberger.ebpf.type.Ptr;
 import picocli.CommandLine;
+import picocli.CommandLine.Option;
 import me.bechberger.ebpf.bpf.map.BPFHashMap;
 import me.bechberger.ebpf.bpf.map.BPFLRUHashMap;
+import me.bechberger.ebpf.annotations.Unsigned;
+// import me.bechberger.ebpf.annotations.f;
+
 import me.bechberger.ebpf.runtime.TaskDefinitions.task_struct;
 
 import static me.bechberger.ebpf.runtime.ScxDefinitions.scx_dsq_id_flags.SCX_DSQ_LOCAL;
 import static me.bechberger.ebpf.runtime.ScxDefinitions.scx_public_consts.SCX_SLICE_DFL;
 import static me.bechberger.ebpf.runtime.ScxDefinitions.*;
 import static me.bechberger.ebpf.runtime.TaskDefinitions.task_struct;
-
-import static me.bechberger.ebpf.runtime.helpers.BPFHelpers.bpf_get_smp_processor_id;
+import static me.bechberger.ebpf.runtime.helpers.BPFHelpers.bpf_ktime_get_ns;
+import me.bechberger.ebpf.bpf.GlobalVariable;
+import picocli.CommandLine.Option;
 
 @BPF(license = "GPL")
-public abstract class RoundRobinSched extends BPFProgram implements Scheduler {
+@Property(name = "sched_name", value = "round_robin_sched")
+public abstract class RoundRobinSched extends BPFProgram implements Scheduler, Runnable {
+    @Option(names = "--verbose")
+    boolean verbose = false;
 
     // The queue where all runnable processes are stored
     static final long RR_DSQ_ID=0;
@@ -28,8 +37,14 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler {
     // static final long TIME_SLICE=100000000;
     static final long TIME_SLICE=10000;
 
-    // @BPFMapDefinition(maxEntries = 100000)
-    // BPFLRUHashMap<@unsigned Integer, @unsigned double> wait_time;
+
+    final GlobalVariable<@Unsigned Long> total_wait_time = new GlobalVariable<>(0L);
+
+    final GlobalVariable<@Unsigned Long> num_enqueues = new GlobalVariable<>(0L);
+
+    @BPFMapDefinition(maxEntries = 100000)
+    BPFLRUHashMap<@Unsigned Integer, @Unsigned Long> enqueue_time;
+
 
     @Override
     public int init() {
@@ -43,6 +58,8 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler {
         if (is_idle) {
             // We skip the enqueue call
             // sends p to the local queue of the cpu and uses the default time slice value
+            long time = bpf_ktime_get_ns();
+            enqueue_time.put(Integer.valueOf(p.val().pid), time);
             scx_bpf_dispatch(p, SCX_DSQ_LOCAL.value(), TIME_SLICE,0);
         }
         return cpu;
@@ -51,7 +68,11 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler {
     @Override
     public void enqueue(Ptr<task_struct> p, long enq_flags) {
         // No CPU was ready so we put p in our waiting queue
-        scx_bpf_dispatch(p, RR_DSQ_ID, SCX_SLICE_DFL.value(), enq_flags);
+        scx_bpf_dispatch(p, RR_DSQ_ID, TIME_SLICE, enq_flags);
+        
+        // record t_enqueue
+        long time = bpf_ktime_get_ns();
+        enqueue_time.put(Integer.valueOf(p.val().pid), time);
     
     }
 
@@ -64,12 +85,50 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler {
 
     @Override
     public void running(Ptr<task_struct> p) {
-        // p.value()
+        long t = bpf_ktime_get_ns();
+        var lookupResult = enqueue_time.bpf_get(Integer.valueOf(p.val().pid));
+        if (lookupResult != null) {
+            long enqueueTimeValue = lookupResult.val();
+            long wait_time = t - enqueueTimeValue;
+            total_wait_time.set(total_wait_time.get() + wait_time);
+            num_enqueues.set(num_enqueues.get() + 1);
+        }
         return;
     }
 
+    void printStats(){
+        System.out.println("Average wait time: ");
+        System.out.println(total_wait_time.get()/num_enqueues.get());
+    }
+
+    void statsLoop() {
+        try {
+            while (true) {
+                System.out.println("Stats:\n");
+                Thread.sleep(10000);
+                printStats();
+                total_wait_time.set(0L);
+                num_enqueues.set(0L);
+                
+            }
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public void run() {
+        attachScheduler();
+        // if (verbose) {
+            statsLoop();
+        // } else {
+        //     try {
+        //         Thread.currentThread().join();
+        //     } catch (InterruptedException e) {
+        //     }
+        // }
+    }
+
     public static void main(String[] args) {
-        try (var program = BPFProgram.load(SampleScheduler.class)) {
+        try (var program = BPFProgram.load(RoundRobinSched.class)) {
             new CommandLine(program).execute(args);
         }
     }
