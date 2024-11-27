@@ -12,7 +12,6 @@ import picocli.CommandLine.Option;
 import me.bechberger.ebpf.bpf.map.BPFHashMap;
 import me.bechberger.ebpf.bpf.map.BPFLRUHashMap;
 import me.bechberger.ebpf.annotations.Unsigned;
-// import me.bechberger.ebpf.annotations.f;
 
 import me.bechberger.ebpf.runtime.TaskDefinitions.task_struct;
 
@@ -21,8 +20,6 @@ import static me.bechberger.ebpf.runtime.ScxDefinitions.scx_public_consts.SCX_SL
 import static me.bechberger.ebpf.runtime.ScxDefinitions.*;
 import static me.bechberger.ebpf.runtime.TaskDefinitions.task_struct;
 import static me.bechberger.ebpf.runtime.helpers.BPFHelpers.bpf_ktime_get_ns;
-import me.bechberger.ebpf.bpf.GlobalVariable;
-import picocli.CommandLine.Option;
 
 @BPF(license = "GPL")
 @Property(name = "sched_name", value = "round_robin_sched")
@@ -117,14 +114,14 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
 
     public void run() {
         attachScheduler();
-        // if (verbose) {
+        if (verbose) {
             statsLoop();
-        // } else {
-        //     try {
-        //         Thread.currentThread().join();
-        //     } catch (InterruptedException e) {
-        //     }
-        // }
+        } else {
+            try {
+                Thread.currentThread().join();
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     public static void main(String[] args) {
