@@ -8,7 +8,7 @@ from rich.live import Live
 from rich.text import Text
 import json
 
-SCHEDULER = "RoundRobinSched"
+SCHEDULER = "IOPrioSched"
 ITERATIONS = 2
 
 def run_benchmark():
