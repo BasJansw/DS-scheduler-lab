@@ -8,15 +8,58 @@ from rich.live import Live
 from rich.text import Text
 import json
 import matplotlib.pyplot as plt
+import argparse
+import os, sys
+import seaborn as sns
 
 SCHEDULER = "IOPrioSched"
-ITERATIONS = 1
+ITERATIONS = 2
 BENCHMARKS = ["dotty"]
+BUILD = False
+experiment_name = f"{SCHEDULER}-{'+'.join(BENCHMARKS)}-{ITERATIONS}"
+DATA_FOLDER = "zdata/"
+if not os.path.exists(DATA_FOLDER):
+  os.makedirs(DATA_FOLDER)
+  os.chmod(DATA_FOLDER, 0o777)
+if not os.path.exists(DATA_FOLDER+experiment_name):
+  os.makedirs(DATA_FOLDER+experiment_name)
+  os.chmod(DATA_FOLDER+experiment_name, 0o777)
+
+def save_figures(avg_wait_times, slice_usages, test_names):
+  if slice_usages[0]:
+    for i, slice_usage in list(enumerate(slice_usages)) + [("avg", [sum(values) / len(values) for values in zip(*slice_usages)])]:
+      plt.plot(slice_usage)
+      plt.xlabel('Time step')
+      plt.ylabel('Slice usage (%)')
+      plt.title(f'Slice Usage Over Time ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
+      plt.grid(True)
+      plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-{i}.png")
+      plt.close()
+
+      sns.kdeplot(slice_usage if i != "avg" else [item for sublist in slice_usages for item in sublist], bw_adjust=0.5, fill=True, alpha=0.7)
+      plt.xlabel('Slice usage (%)')
+      plt.ylabel('Probability Density')
+      plt.title(f'Slice Usage PDF ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
+      plt.grid(True)
+      plt.xlim(0, 1)
+      plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-pdf-{i}.png")
+      plt.close()
+
+
+  if avg_wait_times[0]:
+    for i, avg_wait_time in list(enumerate(avg_wait_times)) + [("avg", [sum(values) / len(values) for values in zip(*avg_wait_times)])]:
+      plt.plot(avg_wait_time)
+      plt.xlabel('Time step')
+      plt.ylabel('Average wait time')
+      plt.title(f'Average Wait Time Over Time ({SCHEDULER}, {"+".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
+      plt.grid(True)
+      plt.savefig(f"{DATA_FOLDER}{experiment_name}/avg-wait-times-{i}.png")
+      plt.close()
 
 def run_benchmark():
-  experiment_name = f"{SCHEDULER}-{'+'.join(BENCHMARKS)}-{ITERATIONS}"
-
   subprocess.run(["pkill", "-9", "java"])
+  if BUILD:
+    subprocess.run(["./build.sh"])
 
   console = Console()
   scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -26,6 +69,7 @@ def run_benchmark():
   last_timestep = 0
   avg_wait_times = [[]]
   slice_usages = [[]]
+  test_names = []
 
   dotty_times = []
   reactors_times = []
@@ -52,16 +96,17 @@ def run_benchmark():
             benchmark_output.append(benchmark_line.strip() + "\n")
             f.write(f"Benchmark: {benchmark_line}")
 
+            if "iteration" in benchmark_line and "completed" in benchmark_line:
+              avg_wait_times.append([])
+              slice_usages.append([])
+              test_names.append(benchmark_line.split()[1])
+
             if "dotty (scala)" in benchmark_line and "completed" in benchmark_line:
               time = re.search(r'\d+\.\d+', benchmark_line).group()
               dotty_times.append(float(time))
             if "reactors (concurrency)" in benchmark_line and "completed" in benchmark_line:
               time = re.search(r'\d+\.\d+', benchmark_line).group()
               reactors_times.append(float(time))
-
-              avg_wait_times.append([])
-              slice_usages.append([])
-
 
       # Truncate the output to fit within the screen
       max_lines = console.size.height - 4  # Adjust based on your terminal size
@@ -98,32 +143,30 @@ def run_benchmark():
 
     # print("Dotty times: ", dotty_times)
     # print("Reactors times: ", reactors_times)
-
-    if slice_usages[0]:
-      plt.plot(slice_usages[0])
-      plt.xlabel('Time step')
-      plt.ylabel('Slice usage (%)')
-      plt.title(f'Slice Usage Over Time ({SCHEDULER}, {",".join(BENCHMARKS)}, First Iteration)')
-      plt.grid(True)
-      plt.savefig(f"{experiment_name}-slice-usages.png")
-      plt.close()
-
-    if avg_wait_times[0]:
-      plt.plot(avg_wait_times[0])
-      plt.xlabel('Time step')
-      plt.ylabel('Average wait time')
-      plt.title(f'Average Wait Time Over Time ({SCHEDULER}, {"+".join(BENCHMARKS)}, First Iteration)')
-      plt.grid(True)
-      plt.savefig(f"{experiment_name}-avg-wait-times.png")
-      plt.close()
+    save_figures(avg_wait_times[:-1], slice_usages[:-1], test_names)
 
     results = {
       "dotty_times": dotty_times,
       "reactors_times": reactors_times
     }
 
-    with open('times.json', 'w') as json_file:
+    with open(f'{DATA_FOLDER}times.json', 'w') as json_file:
       json.dump(results, json_file, indent=4)
 
 if __name__ == "__main__":
+  if not os.geteuid() == 0:
+    sys.exit("Please run with sudo")
+
+
+  parser = argparse.ArgumentParser(
+                    prog='Benchmark Scheduler',
+                    description='Tests the capabilities of the scheduler')
+
+
+  parser.add_argument('-b', '--build',
+                    action='store_true')  # on/off flag
+  args = parser.parse_args()
+  BUILD = args.build
+
+
   run_benchmark()
