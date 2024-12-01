@@ -8,14 +8,14 @@ from rich.live import Live
 from rich.text import Text
 import json
 
-SCHEDULER = "IOPrioSched"
+SCHEDULER = "RoundRobinSched"
 ITERATIONS = 2
 
 def run_benchmark():
   subprocess.run(["pkill", "-9", "java"])
 
   console = Console()
-  scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+  scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose --slice_time 100000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
   command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS), 'reactors', 'dotty']
   benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 

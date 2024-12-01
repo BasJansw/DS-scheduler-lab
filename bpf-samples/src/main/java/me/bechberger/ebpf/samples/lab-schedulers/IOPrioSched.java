@@ -30,21 +30,38 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     @Option(names = "--verbose")
     boolean verbose = false;
 
+    @Option(names = "--slice_time")
+    // Default is 20 milion (ns)
+    long slice_time_setting = 20000000;
+    final GlobalVariable<@Unsigned Long> slice_time = new GlobalVariable<>(0L);
+
+    // The time slice used in the priority queue
+    @Option(names = "--slice_time_prio")
+    // Default is 20 milion (ns)
+    long slice_time_prio_setting = 20000000;
+    final GlobalVariable<@Unsigned Long> slice_time_prio = new GlobalVariable<>(0L);
+
+
+    // Threshold of how much of the time slice the process consumes to be put in priority queue
+    @Option(names = "--prio_slice_usage_percentage")
+    int prio_slice_usage_percentage_setting = 5;
+    final GlobalVariable<@Unsigned Integer> prio_slice_usage_percentage = new GlobalVariable<>(0);
+
+
     // The queue where all runnable processes are stored
     static final long RR_DSQ_ID=0;
     static final long IO_PRIO_DSQ_ID=1;
 
-    // We don't use SCX_SLICE_DFL (our time slice in ns)
-    // static final long TIME_SLICE=100000000;
-    static final long TIME_SLICE=10000000;
-
-    // The fraction of the slice that a task is allowed to use to be classified as "IO heavy"
-    static final double IO_SLICE_USAGE_PERCENTAGE = 5;
-
 
     final GlobalVariable<@Unsigned Long> total_wait_time = new GlobalVariable<>(0L);
-
     final GlobalVariable<@Unsigned Long> num_enqueues = new GlobalVariable<>(0L);
+
+
+    final GlobalVariable<@Unsigned Long> total_normal_queue_wait_time = new GlobalVariable<>(0L);
+    final GlobalVariable<@Unsigned Long> num_normal_enqueues = new GlobalVariable<>(0L);
+
+    final GlobalVariable<@Unsigned Long> total_prio_queue_wait_time = new GlobalVariable<>(0L);
+    final GlobalVariable<@Unsigned Long> num_prio_enqueues = new GlobalVariable<>(0L);
 
 
     final GlobalVariable<@Unsigned Long> slice_usage_last = new GlobalVariable<>(0L);
@@ -65,7 +82,7 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
             // no known value so return the worst possible.
             return 100;
         }
-        return (used_t.val() * 100) / TIME_SLICE;
+        return (used_t.val() * 100) / slice_time.get();
     }
 
     @Override
@@ -87,20 +104,20 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
             // sends p to the local queue of the cpu and uses the default time slice value
             long time = bpf_ktime_get_ns();
             enqueue_time.put(Integer.valueOf(p.val().pid), time);
-            scx_bpf_dispatch(p, SCX_DSQ_LOCAL.value(), TIME_SLICE,0);
+            scx_bpf_dispatch(p, SCX_DSQ_LOCAL.value(), slice_time.get(),0);
         }
         return cpu;
     }
 
     @Override
     public void enqueue(Ptr<task_struct> p, long enq_flags) {
-        if (sliceUsagePercentage(p.val().pid) < IO_SLICE_USAGE_PERCENTAGE){
-            scx_bpf_dispatch(p, IO_PRIO_DSQ_ID, TIME_SLICE, enq_flags);
+        if (sliceUsagePercentage(p.val().pid) < prio_slice_usage_percentage.get()){
+            scx_bpf_dispatch(p, IO_PRIO_DSQ_ID, slice_time_prio.get(), enq_flags);
         } else {
             // No CPU was ready so we put p in our waiting queue
-            scx_bpf_dispatch(p, RR_DSQ_ID, TIME_SLICE, enq_flags);
+            scx_bpf_dispatch(p, RR_DSQ_ID, slice_time.get(), enq_flags);
         }
-
+        
         // record t_enqueue
         long time = bpf_ktime_get_ns();
         enqueue_time.put(Integer.valueOf(p.val().pid), time);
@@ -113,10 +130,8 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
         // Place the first task into the local DSQ of the cpu
 
         if (scx_bpf_dsq_nr_queued(IO_PRIO_DSQ_ID) >= 1){
-            last_queue.set(true);
             scx_bpf_consume(IO_PRIO_DSQ_ID);
         } else {
-            last_queue.set(false);
             scx_bpf_consume(RR_DSQ_ID);
         }
         
@@ -126,47 +141,73 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     public void running(Ptr<task_struct> p) {
         long t = bpf_ktime_get_ns();
         var lookupResult = enqueue_time.bpf_get(Integer.valueOf(p.val().pid));
-        if (lookupResult != null) {
-            long enqueueTimeValue = lookupResult.val();
-            long wait_time = t - enqueueTimeValue;
-            total_wait_time.set(total_wait_time.get() + wait_time);
-            num_enqueues.set(num_enqueues.get() + 1);
+        
+        if (lookupResult == null) {
+            return;
+            
         }
-        return;
+        
+        long enqueueTimeValue = lookupResult.val();
+        long wait_time = t - enqueueTimeValue;
+
+        if (sliceUsagePercentage(p.val().pid) < prio_slice_usage_percentage.get()) {
+            total_prio_queue_wait_time.set(total_prio_queue_wait_time.get() + wait_time);
+            num_prio_enqueues.set(num_prio_enqueues.get() + 1);
+        }else {
+            total_normal_queue_wait_time.set(total_normal_queue_wait_time.get() + wait_time);
+            num_normal_enqueues.set(num_normal_enqueues.get() + 1);
+        }
+
+        total_wait_time.set(total_wait_time.get() + wait_time);
+        num_enqueues.set(num_enqueues.get() + 1);
     }
 
     @Override
     public void stopping(Ptr<task_struct> p, boolean runnable) {
-        long usedTime = TIME_SLICE - p.val().scx.slice;
+        long usedTime = slice_time.get() - p.val().scx.slice;
         slice_usage.put(Integer.valueOf(p.val().pid), usedTime);
-        slice_usage_last.set(usedTime);
     }
 
     void printStats(){
-        System.out.println("Average wait time: ");
-        System.out.println(total_wait_time.get()/num_enqueues.get());
-        double sliceUsage = (double) slice_usage_last.get() / TIME_SLICE;
-        System.out.printf("Slice usage: %d\n", slice_usage_last.get());
-        System.out.printf("Slice usage: %.2f\n", sliceUsage);
-        System.out.printf("queue: %b", last_queue.get());
+        System.out.println("total_wait_time: " + total_wait_time.get());
+        System.out.println("total_enqueues: " + num_enqueues.get());
+        System.out.println("total_prio_wait_time: " + total_prio_queue_wait_time.get());
+        System.out.println("total_prio_enqueues: " + num_prio_enqueues.get());
+        System.out.println("total_normal_wait_time: " + total_normal_queue_wait_time.get());
+        System.out.println("total_normal_enqueues: " + num_normal_enqueues.get());
+    }
+
+    void resetStats(){
+        total_wait_time.set(0L);
+        num_enqueues.set(0L);
+
+        total_prio_queue_wait_time.set(0L);
+        num_prio_enqueues.set(0L);
+        
+        total_normal_queue_wait_time.set(0L);
+        num_normal_enqueues.set(0L);
     }
 
     void statsLoop() {
         try {
             while (true) {
-                System.out.println("Stats:\n");
                 Thread.sleep(1000);
                 printStats();
-                total_wait_time.set(0L);
-                num_enqueues.set(0L);
-                
+                resetStats();
             }
         } catch (InterruptedException e) {
         }
     }
 
+    void setSettings(){
+        slice_time.set(slice_time_setting);
+        slice_time_prio.set(slice_time_prio_setting);
+        prio_slice_usage_percentage.set(prio_slice_usage_percentage_setting);
+    }
+
     public void run() {
         attachScheduler();
+        setSettings();
         if (verbose) {
             statsLoop();
         } else {

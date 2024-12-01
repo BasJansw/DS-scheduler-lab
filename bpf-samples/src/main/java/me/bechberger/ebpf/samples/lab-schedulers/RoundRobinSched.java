@@ -27,13 +27,13 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
     @Option(names = "--verbose")
     boolean verbose = false;
 
+    // Default is 20 milion (ns)
+    @Option(names = "--slice_time")
+    long slice_time_setting = 20000000;
+    final GlobalVariable<@Unsigned Long> slice_time = new GlobalVariable<>(0L);
+
     // The queue where all runnable processes are stored
     static final long RR_DSQ_ID=0;
-
-    // We don't use SCX_SLICE_DFL (our time slice in ns)
-    // static final long TIME_SLICE=100000000;
-    static final long TIME_SLICE=10000;
-
 
     final GlobalVariable<@Unsigned Long> total_wait_time = new GlobalVariable<>(0L);
 
@@ -57,7 +57,7 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
             // sends p to the local queue of the cpu and uses the default time slice value
             long time = bpf_ktime_get_ns();
             enqueue_time.put(Integer.valueOf(p.val().pid), time);
-            scx_bpf_dispatch(p, SCX_DSQ_LOCAL.value(), TIME_SLICE,0);
+            scx_bpf_dispatch(p, SCX_DSQ_LOCAL.value(), slice_time.get(),0);
         }
         return cpu;
     }
@@ -65,7 +65,7 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
     @Override
     public void enqueue(Ptr<task_struct> p, long enq_flags) {
         // No CPU was ready so we put p in our waiting queue
-        scx_bpf_dispatch(p, RR_DSQ_ID, TIME_SLICE, enq_flags);
+        scx_bpf_dispatch(p, RR_DSQ_ID, slice_time.get(), enq_flags);
         
         // record t_enqueue
         long time = bpf_ktime_get_ns();
@@ -94,19 +94,23 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
     }
 
     void printStats(){
-        System.out.println("Average wait time: ");
-        System.out.println(total_wait_time.get()/num_enqueues.get());
+        System.out.println("total_wait_time: " + total_wait_time.get());
+        System.out.println("total_enqueues: " + num_enqueues.get());
+    }
+    
+    void resetStats(){
+
+        total_wait_time.set(0L);
+        num_enqueues.set(0L);
+
     }
 
     void statsLoop() {
         try {
             while (true) {
-                System.out.println("Stats:\n");
-                Thread.sleep(10000);
+                Thread.sleep(1000);
                 printStats();
-                total_wait_time.set(0L);
-                num_enqueues.set(0L);
-                
+                resetStats();
             }
         } catch (InterruptedException e) {
         }
@@ -114,6 +118,7 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
 
     public void run() {
         attachScheduler();
+        slice_time.set(slice_time_setting);
         if (verbose) {
             statsLoop();
         } else {
