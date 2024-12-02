@@ -168,7 +168,10 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
         slice_usage.put(Integer.valueOf(p.val().pid), usedTime);
     }
 
+    int step = 0;
     void printStats(){
+        System.out.println("step: " + step);
+        step ++;
         System.out.println("total_wait_time: " + total_wait_time.get());
         System.out.println("total_enqueues: " + num_enqueues.get());
         System.out.println("total_prio_wait_time: " + total_prio_queue_wait_time.get());
@@ -191,7 +194,7 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     void statsLoop() {
         try {
             while (true) {
-                Thread.sleep(1000);
+                Thread.sleep(100);
                 printStats();
                 resetStats();
             }
