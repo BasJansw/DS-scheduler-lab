@@ -250,7 +250,7 @@ public abstract class PrioSchedWeightedAvg extends BPFProgram implements Schedul
     }
 
     public static void main(String[] args) {
-        try (var program = BPFProgram.load(IOPrioSched.class)) {
+        try (var program = BPFProgram.load(PrioSchedWeightedAvg.class)) {
             new CommandLine(program).execute(args);
         }
     }
