@@ -17,6 +17,7 @@ import me.bechberger.ebpf.bpf.map.BPFLRUHashMap;
 import me.bechberger.ebpf.annotations.Unsigned;
 
 import me.bechberger.ebpf.runtime.TaskDefinitions.task_struct;
+import me.bechberger.ebpf.runtime.misc.used_address;
 
 import static me.bechberger.ebpf.runtime.ScxDefinitions.scx_dsq_id_flags.SCX_DSQ_LOCAL;
 import static me.bechberger.ebpf.runtime.ScxDefinitions.scx_public_consts.SCX_SLICE_DFL;
@@ -25,8 +26,8 @@ import static me.bechberger.ebpf.runtime.TaskDefinitions.task_struct;
 import static me.bechberger.ebpf.runtime.helpers.BPFHelpers.bpf_ktime_get_ns;
 
 @BPF(license = "GPL")
-@Property(name = "sched_name", value = "io_priority_scheduler")
-public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runnable {
+@Property(name = "sched_name", value = "priority_weighted_avg_scheduler")
+public abstract class PrioSchedWeightedAvg extends BPFProgram implements Scheduler, Runnable {
     @Option(names = "--verbose")
     boolean verbose = false;
 
@@ -47,6 +48,18 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     int prio_slice_usage_percentage_setting = 5;
     final GlobalVariable<@Unsigned Integer> prio_slice_usage_percentage = new GlobalVariable<>(0);
 
+    // The constant c from the formula: avg_usage_{t+1} = avg_usage_t * c + (1-c) * usage_ts
+    @Option(names = "--weighted_avg_mult")
+    double weight_avg_mult_setting = 0.99;
+    final GlobalVariable<@Unsigned Long> weight_avg_mult = new GlobalVariable<>(0L);
+    // used to multiply the weight to represent it as a non floating point number
+    final GlobalVariable<@Unsigned Long> FIXED_POINT_MULT = new GlobalVariable<>(1000000L);
+    // static final long FIXED_POINT_MULT = 1000000;
+
+    // The avg_usage assumed for t=0
+    @Option(names = "--initial_usage_percentage")
+    double initial_usage_percentage_setting = 1;
+    final GlobalVariable<@Unsigned Long> initial_usage = new GlobalVariable<>(0L);
 
     // The queue where all runnable processes are stored
     static final long RR_DSQ_ID=0;
@@ -162,7 +175,23 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     @Override
     public void stopping(Ptr<task_struct> p, boolean runnable) {
         long usedTime = slice_time.get() - p.val().scx.slice;
-        slice_usage.put(Integer.valueOf(p.val().pid), usedTime);
+        long prevAvg = initial_usage.get();
+
+        var prevAvgPtr = slice_usage.bpf_get(p.val().pid);
+        if (prevAvgPtr != null){
+            prevAvg = prevAvgPtr.val();
+        }
+
+        long c = weight_avg_mult.get();
+        // long numerator = prevAvg * c + (FIXED_POINT_MULT.get() - c) * usedTime;
+    
+        // if (numerator < 0) {
+        //     numerator = numerator & 0xFFFFFFFFFFFFFFFFL; // Convert to unsigned equivalent.
+        // }
+    
+        // long weightedAvg = numerator / FIXED_POINT_MULT.get(); // Perform division manually.
+        long weightedAvg = (prevAvg * c + (FIXED_POINT_MULT.get() - c) * usedTime) / FIXED_POINT_MULT.get();
+        slice_usage.put(Integer.valueOf(p.val().pid), weightedAvg);
     }
 
     int step = 0;
@@ -203,6 +232,8 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
         slice_time.set(slice_time_setting);
         slice_time_prio.set(slice_time_prio_setting);
         prio_slice_usage_percentage.set(prio_slice_usage_percentage_setting);
+        weight_avg_mult.set((long) (weight_avg_mult_setting * FIXED_POINT_MULT.get()));
+        initial_usage.set((long) (slice_time_setting * initial_usage_percentage_setting));
     }
 
     public void run() {

@@ -12,7 +12,8 @@ import argparse
 import os, sys
 import seaborn as sns
 
-SCHEDULER = "RoundRobinSched"
+available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg"]
+SCHEDULER = available_schedulers[2]
 ITERATIONS = 2
 BENCHMARKS = ["dotty"]
 BUILD = False
@@ -62,13 +63,8 @@ def run_benchmark():
     subprocess.run(["./build.sh"])
 
   console = Console()
-<<<<<<< HEAD
-  scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose --slice_time 100000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-  command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS), 'reactors', 'dotty']
-=======
   scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-  command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS)] + BENCHMARKS
->>>>>>> 9569cfaf941bfb2ff30179819a2321b8277a1eac
+  command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS), 'reactors', 'dotty']
   benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
   last_timestep = 0
