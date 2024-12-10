@@ -26,36 +26,36 @@ if not os.path.exists(DATA_FOLDER+experiment_name):
   os.makedirs(DATA_FOLDER+experiment_name)
   os.chmod(DATA_FOLDER+experiment_name, 0o777)
 
-def save_figures(avg_wait_times, slice_usages, test_names):
-  if slice_usages[0]:
-    for i, slice_usage in list(enumerate(slice_usages)) + [("avg", [sum(values) / len(values) for values in zip(*slice_usages)])]:
-      plt.plot(slice_usage)
-      plt.xlabel('Time step')
-      plt.ylabel('Slice usage (%)')
-      plt.title(f'Slice Usage Over Time ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
-      plt.grid(True)
-      plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-{i}.png")
-      plt.close()
+# def save_figures(avg_wait_times, slice_usages, test_names):
+#   if slice_usages[0]:
+#     for i, slice_usage in list(enumerate(slice_usages)) + [("avg", [sum(values) / len(values) for values in zip(*slice_usages)])]:
+#       plt.plot(slice_usage)
+#       plt.xlabel('Time step')
+#       plt.ylabel('Slice usage (%)')
+#       plt.title(f'Slice Usage Over Time ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
+#       plt.grid(True)
+#       plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-{i}.png")
+#       plt.close()
 
-      sns.kdeplot(slice_usage if i != "avg" else [item for sublist in slice_usages for item in sublist], bw_adjust=0.5, fill=True, alpha=0.7)
-      plt.xlabel('Slice usage (%)')
-      plt.ylabel('Probability Density')
-      plt.title(f'Slice Usage PDF ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
-      plt.grid(True)
-      plt.xlim(0, 1)
-      plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-pdf-{i}.png")
-      plt.close()
+#       sns.kdeplot(slice_usage if i != "avg" else [item for sublist in slice_usages for item in sublist], bw_adjust=0.5, fill=True, alpha=0.7)
+#       plt.xlabel('Slice usage (%)')
+#       plt.ylabel('Probability Density')
+#       plt.title(f'Slice Usage PDF ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
+#       plt.grid(True)
+#       plt.xlim(0, 1)
+#       plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-pdf-{i}.png")
+#       plt.close()
 
 
-  if avg_wait_times[0]:
-    for i, avg_wait_time in list(enumerate(avg_wait_times)) + [("avg", [sum(values) / len(values) for values in zip(*avg_wait_times)])]:
-      plt.plot(avg_wait_time)
-      plt.xlabel('Time step')
-      plt.ylabel('Average wait time')
-      plt.title(f'Average Wait Time Over Time ({SCHEDULER}, {"+".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
-      plt.grid(True)
-      plt.savefig(f"{DATA_FOLDER}{experiment_name}/avg-wait-times-{i}.png")
-      plt.close()
+#   if avg_wait_times[0]:
+#     for i, avg_wait_time in list(enumerate(avg_wait_times)) + [("avg", [sum(values) / len(values) for values in zip(*avg_wait_times)])]:
+#       plt.plot(avg_wait_time)
+#       plt.xlabel('Time step')
+#       plt.ylabel('Average wait time')
+#       plt.title(f'Average Wait Time Over Time ({SCHEDULER}, {"+".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
+#       plt.grid(True)
+#       plt.savefig(f"{DATA_FOLDER}{experiment_name}/avg-wait-times-{i}.png")
+#       plt.close()
 
 def run_benchmark():
   subprocess.run(["pkill", "-9", "java"])
@@ -68,12 +68,15 @@ def run_benchmark():
   benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
   last_timestep = 0
-  avg_wait_times = [[]]
-  slice_usages = [[]]
-  test_names = []
+  avg_wait_times = { "dotty": [[]], "reactors": [[]]}
+  slice_usages = { "dotty": [[]], "reactors": [[]]}
 
-  dotty_times = []
-  reactors_times = []
+  current_benchmark = ""
+
+  # dotty_times = []
+  # reactors_times = []
+
+  times = { "dotty": [], "reactors": []}
 
   scheduler_output = Text()
   benchmark_output = Text()
@@ -97,17 +100,36 @@ def run_benchmark():
             benchmark_output.append(benchmark_line.strip() + "\n")
             f.write(f"Benchmark: {benchmark_line}")
 
-            if "iteration" in benchmark_line and "completed" in benchmark_line:
-              avg_wait_times.append([])
-              slice_usages.append([])
-              test_names.append(benchmark_line.split()[1])
+            # if "iteration" in benchmark_line and "completed" in benchmark_line:
+            #   avg_wait_times.append([])
+            #   slice_usages.append([])
+            #   test_names.append(benchmark_line.split()[1])
 
-            if "dotty (scala)" in benchmark_line and "completed" in benchmark_line:
+            if "dotty (scala)" in benchmark_line and "started ===" in benchmark_line:
+              current_benchmark = "dotty"
+            elif "reactors (concurrency)" in benchmark_line and "started ===" in benchmark_line:
+              current_benchmark = "reactors"
+
+            if "completed ===" in benchmark_line:
               time = re.search(r'\d+\.\d+', benchmark_line).group()
-              dotty_times.append(float(time))
-            if "reactors (concurrency)" in benchmark_line and "completed" in benchmark_line:
-              time = re.search(r'\d+\.\d+', benchmark_line).group()
-              reactors_times.append(float(time))
+              times[current_benchmark].append(float(time))
+
+              avg_wait_times[current_benchmark].append([])
+              slice_usages[current_benchmark].append([])
+            
+
+            # if "dotty (scala)" in benchmark_line and "completed" in benchmark_line:
+            #   time = re.search(r'\d+\.\d+', benchmark_line).group()
+            #   times["dotty"].append(float(time))
+
+            #   avg_wait_times["dotty"].append([])
+            #   slice_usages["dotty"].append([])
+            # if "reactors (concurrency)" in benchmark_line and "completed" in benchmark_line:
+            #   time = re.search(r'\d+\.\d+', benchmark_line).group()
+            #   times["reactors"].append(float(time))
+
+            #   avg_wait_times["reactors"].append([])
+            #   slice_usages["reactors"].append([])
 
       # Truncate the output to fit within the screen
       max_lines = console.size.height - 4  # Adjust based on your terminal size
@@ -124,8 +146,8 @@ def run_benchmark():
             slice_usage = int(re.search(r'Slice usage: (\d+)', scheduler_output_str).group(1))
             slice_usage_frac = float(re.search(r'Slice usage\(\%\): (\d+\.\d+)', scheduler_output_str).group(1))
 
-            avg_wait_times[-1].append(avg_wait_time)
-            slice_usages[-1].append(slice_usage_frac)
+            avg_wait_times[current_benchmark][-1].append(avg_wait_time)
+            slice_usages[current_benchmark][-1].append(slice_usage_frac)
 
             last_timestep = timestep
 
@@ -144,15 +166,24 @@ def run_benchmark():
 
     # print("Dotty times: ", dotty_times)
     # print("Reactors times: ", reactors_times)
-    save_figures(avg_wait_times[:-1], slice_usages[:-1], test_names)
+    # save_figures(avg_wait_times[:-1], slice_usages[:-1], test_names)
 
     results = {
-      "dotty_times": dotty_times,
-      "reactors_times": reactors_times
+      "dotty": {
+        "times": times["dotty"],
+        "slice_usages": slice_usages["dotty"],
+        "avg_wait_times": avg_wait_times["dotty"]
+      },
+      "reactors": {
+        "times": times["reactors"],
+        "slice_usages": slice_usages["reactors"],
+        "avg_wait_times": avg_wait_times["reactors"]
+      }
     }
 
-    with open(f'{DATA_FOLDER}times.json', 'w') as json_file:
-      json.dump(results, json_file, indent=4)
+    with open(f'{DATA_FOLDER}results.json', 'w') as json_file:
+      # json.dumps(results, json_file, indent=4)
+      json_file.write(json.dumps(results, indent=4))
 
 if __name__ == "__main__":
   if not os.geteuid() == 0:
