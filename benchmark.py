@@ -12,10 +12,10 @@ import argparse
 import os, sys
 import seaborn as sns
 
-available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg"]
-SCHEDULER = available_schedulers[2]
-ITERATIONS = 1
-BENCHMARKS = ["dotty"]
+available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", None]
+SCHEDULER = available_schedulers[3]
+ITERATIONS = 30
+BENCHMARKS = ["dotty", "reactors"]
 BUILD = False
 experiment_name = f"{SCHEDULER}-{'+'.join(BENCHMARKS)}-{ITERATIONS}"
 DATA_FOLDER = "zdata/"
@@ -26,36 +26,6 @@ if not os.path.exists(DATA_FOLDER+experiment_name):
   os.makedirs(DATA_FOLDER+experiment_name)
   os.chmod(DATA_FOLDER+experiment_name, 0o777)
 
-# def save_figures(avg_wait_times, slice_usages, test_names):
-#   if slice_usages[0]:
-#     for i, slice_usage in list(enumerate(slice_usages)) + [("avg", [sum(values) / len(values) for values in zip(*slice_usages)])]:
-#       plt.plot(slice_usage)
-#       plt.xlabel('Time step')
-#       plt.ylabel('Slice usage (%)')
-#       plt.title(f'Slice Usage Over Time ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
-#       plt.grid(True)
-#       plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-{i}.png")
-#       plt.close()
-
-#       sns.kdeplot(slice_usage if i != "avg" else [item for sublist in slice_usages for item in sublist], bw_adjust=0.5, fill=True, alpha=0.7)
-#       plt.xlabel('Slice usage (%)')
-#       plt.ylabel('Probability Density')
-#       plt.title(f'Slice Usage PDF ({SCHEDULER}, {",".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
-#       plt.grid(True)
-#       plt.xlim(0, 1)
-#       plt.savefig(f"{DATA_FOLDER}{experiment_name}/slice-usages-pdf-{i}.png")
-#       plt.close()
-
-
-#   if avg_wait_times[0]:
-#     for i, avg_wait_time in list(enumerate(avg_wait_times)) + [("avg", [sum(values) / len(values) for values in zip(*avg_wait_times)])]:
-#       plt.plot(avg_wait_time)
-#       plt.xlabel('Time step')
-#       plt.ylabel('Average wait time')
-#       plt.title(f'Average Wait Time Over Time ({SCHEDULER}, {"+".join(BENCHMARKS)}, {"Average" if i == "avg" else "Iteration " + str(i)})')
-#       plt.grid(True)
-#       plt.savefig(f"{DATA_FOLDER}{experiment_name}/avg-wait-times-{i}.png")
-#       plt.close()
 
 def run_benchmark():
   subprocess.run(["pkill", "-9", "java"])
@@ -63,7 +33,10 @@ def run_benchmark():
     subprocess.run(["./build.sh"])
 
   console = Console()
-  scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+  if SCHEDULER:
+    scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+  else:
+    scheduler_process = None
   command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS)] + BENCHMARKS
   benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -85,11 +58,13 @@ def run_benchmark():
 
   with open('output.txt', 'w') as f, Live(console=console, refresh_per_second=4) as live:
     while True:
-      reads = [scheduler_process.stdout.fileno(), benchmark_process.stdout.fileno()]
+      reads = [benchmark_process.stdout.fileno()]
+      if scheduler_process:
+        reads.append(scheduler_process.stdout.fileno())
       ret = select.select(reads, [], [])
 
       for fd in ret[0]:
-        if fd == scheduler_process.stdout.fileno():
+        if scheduler_process and fd == scheduler_process.stdout.fileno():
           scheduler_line = scheduler_process.stdout.readline()
           if scheduler_line:
             scheduler_output.append(scheduler_line.strip() + "\n")
@@ -134,18 +109,20 @@ def run_benchmark():
 
             total_wait_time = int(re.search(r'total_wait_time: (\d+)', scheduler_output_str).group(1))
             total_enqueue = int(re.search(r'total_enqueues: (\d+)', scheduler_output_str).group(1))
-            total_prio_wait = int(re.search(r'total_prio_wait_time: (\d+)', scheduler_output_str).group(1))
-            total_prio_enqueue = int(re.search(r'total_prio_enqueues: (\d+)', scheduler_output_str).group(1))
-            total_normal_wait = int(re.search(r'total_normal_wait_time: (\d+)', scheduler_output_str).group(1))
-            total_normal_enqueue = int(re.search(r'total_normal_enqueues: (\d+)', scheduler_output_str).group(1))
-
             total_wait_times[current_benchmark][-1].append(total_wait_time)
             total_enqueues[current_benchmark][-1].append(total_enqueue)
-            total_prio_wait_time[current_benchmark][-1].append(total_prio_wait)
-            total_prio_enqueues[current_benchmark][-1].append(total_prio_enqueue)
-            total_normal_wait_time[current_benchmark][-1].append(total_normal_wait)
-            total_normal_enqueues[current_benchmark][-1].append(total_normal_enqueue)
-            
+
+            try:
+              total_prio_wait = int(re.search(r'total_prio_wait_time: (\d+)', scheduler_output_str).group(1))
+              total_prio_enqueue = int(re.search(r'total_prio_enqueues: (\d+)', scheduler_output_str).group(1))
+              total_normal_wait = int(re.search(r'total_normal_wait_time: (\d+)', scheduler_output_str).group(1))
+              total_normal_enqueue = int(re.search(r'total_normal_enqueues: (\d+)', scheduler_output_str).group(1))
+              total_prio_wait_time[current_benchmark][-1].append(total_prio_wait)
+              total_prio_enqueues[current_benchmark][-1].append(total_prio_enqueue)
+              total_normal_wait_time[current_benchmark][-1].append(total_normal_wait)
+              total_normal_enqueues[current_benchmark][-1].append(total_normal_enqueue)
+            except:
+              pass
 
             last_timestep = timestep
 
@@ -157,10 +134,11 @@ def run_benchmark():
       if benchmark_process.poll() is not None:
         break
 
-    scheduler_process.terminate()
-    scheduler_process.wait()
-    benchmark_process.stdout.close()
-    benchmark_process.wait()
+    if scheduler_process: 
+      scheduler_process.terminate()
+      scheduler_process.wait()
+      benchmark_process.stdout.close()
+      benchmark_process.wait()
 
     results = {
       "dotty": {
@@ -183,7 +161,7 @@ def run_benchmark():
       }
     }
 
-    with open(f'{DATA_FOLDER}results.json', 'w') as json_file:
+    with open(f'{DATA_FOLDER}{experiment_name}/results.json', 'w') as json_file:
       # json.dumps(results, json_file, indent=4)
       json_file.write(json.dumps(results, indent=4))
 
