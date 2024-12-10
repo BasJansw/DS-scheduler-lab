@@ -56,12 +56,20 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     final GlobalVariable<@Unsigned Long> total_wait_time = new GlobalVariable<>(0L);
     final GlobalVariable<@Unsigned Long> num_enqueues = new GlobalVariable<>(0L);
 
-
     final GlobalVariable<@Unsigned Long> total_normal_queue_wait_time = new GlobalVariable<>(0L);
     final GlobalVariable<@Unsigned Long> num_normal_enqueues = new GlobalVariable<>(0L);
 
     final GlobalVariable<@Unsigned Long> total_prio_queue_wait_time = new GlobalVariable<>(0L);
     final GlobalVariable<@Unsigned Long> num_prio_enqueues = new GlobalVariable<>(0L);
+
+    final GlobalVariable<@Unsigned Long> total_used_slice_time = new GlobalVariable<>(0L);
+    final GlobalVariable<@Unsigned Long> total_num_slices = new GlobalVariable<>(0L);
+
+    final GlobalVariable<@Unsigned Long> normal_used_slice_time = new GlobalVariable<>(0L);
+    final GlobalVariable<@Unsigned Long> normal_num_slices = new GlobalVariable<>(0L);
+
+    final GlobalVariable<@Unsigned Long> prio_used_slice_time = new GlobalVariable<>(0L);
+    final GlobalVariable<@Unsigned Long> prio_num_slices = new GlobalVariable<>(0L);
 
 
     @BPFMapDefinition(maxEntries = 100000)
@@ -162,6 +170,18 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
     @Override
     public void stopping(Ptr<task_struct> p, boolean runnable) {
         long usedTime = slice_time.get() - p.val().scx.slice;
+        
+        // record the slice time usage stats:
+        total_used_slice_time.set(usedTime + total_used_slice_time.get());
+        total_num_slices.set(total_num_slices.get() + 1);
+        if (sliceUsagePercentage(p.val().pid) < prio_slice_usage_percentage.get()) {
+            prio_used_slice_time.set(usedTime + prio_used_slice_time.get());
+            prio_num_slices.set(prio_num_slices.get() + 1);
+        } else {
+            normal_used_slice_time.set(usedTime + normal_used_slice_time.get());
+            normal_num_slices.set(normal_num_slices.get() + 1);
+        }
+
         slice_usage.put(Integer.valueOf(p.val().pid), usedTime);
     }
 
@@ -175,6 +195,22 @@ public abstract class IOPrioSched extends BPFProgram implements Scheduler, Runna
         System.out.println("total_prio_enqueues: " + num_prio_enqueues.get());
         System.out.println("total_normal_wait_time: " + total_normal_queue_wait_time.get());
         System.out.println("total_normal_enqueues: " + num_normal_enqueues.get());
+
+
+        System.out.println("total_used_slice_time: " + total_used_slice_time.get());
+        System.out.println("total_num_slices: " + total_num_slices.get());
+
+        System.out.println("normal_used_slice_time: " + normal_used_slice_time.get());
+        System.out.println("normal_num_slices: " + normal_num_slices.get());
+
+        System.out.println("prio_used_slice_time: " + prio_used_slice_time.get());
+        System.out.println("prio_num_slices: " + prio_num_slices.get());
+        
+        double prio_usage = ((double) prio_used_slice_time.get() / (double) prio_num_slices.get())/ (double) slice_time_prio.get();
+        System.out.println("prio_slice_usage: " + prio_usage);
+
+        double normal_usage = ((double) normal_used_slice_time.get() / (double) normal_num_slices.get())/ (double) slice_time.get();
+        System.out.println("normal_slice_usage: " + normal_usage);
     }
 
     void resetStats(){

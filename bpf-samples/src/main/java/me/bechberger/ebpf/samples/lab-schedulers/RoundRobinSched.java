@@ -39,6 +39,11 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
 
     final GlobalVariable<@Unsigned Long> num_enqueues = new GlobalVariable<>(0L);
 
+
+    final GlobalVariable<@Unsigned Long> used_slice_time = new GlobalVariable<>(0L);
+
+    final GlobalVariable<@Unsigned Long> num_slices = new GlobalVariable<>(0L);
+
     @BPFMapDefinition(maxEntries = 100000)
     BPFLRUHashMap<@Unsigned Integer, @Unsigned Long> enqueue_time;
 
@@ -93,22 +98,38 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
         return;
     }
 
+    @Override
+    public void stopping(Ptr<task_struct> p, boolean runnable) {
+        long usedTime = slice_time.get() - p.val().scx.slice;
+        used_slice_time.set(usedTime + used_slice_time.get());
+        num_slices.set(num_slices.get() + 1);
+    }
+
+
+    int step = 0;
     void printStats(){
+        System.out.println("step: " + step);
+        step ++;
         System.out.println("total_wait_time: " + total_wait_time.get());
         System.out.println("total_enqueues: " + num_enqueues.get());
+        System.out.println("used_slice_time: " + used_slice_time.get());
+        System.out.println("num_slices: " + num_slices.get());
+        
+        double usage = ((double) used_slice_time.get() / (double) num_slices.get())/ (double) slice_time.get();
+        System.out.println("slice_usage: " + usage);
     }
     
     void resetStats(){
-
         total_wait_time.set(0L);
         num_enqueues.set(0L);
-
+        num_slices.set(0L);
+        used_slice_time.set(0L);
     }
 
     void statsLoop() {
         try {
             while (true) {
-                Thread.sleep(1000);
+                Thread.sleep(100);
                 printStats();
                 resetStats();
             }
