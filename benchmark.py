@@ -14,7 +14,7 @@ import seaborn as sns
 
 available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg"]
 SCHEDULER = available_schedulers[2]
-ITERATIONS = 2
+ITERATIONS = 1
 BENCHMARKS = ["dotty"]
 BUILD = False
 experiment_name = f"{SCHEDULER}-{'+'.join(BENCHMARKS)}-{ITERATIONS}"
@@ -64,17 +64,19 @@ def run_benchmark():
 
   console = Console()
   scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-  command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS), 'reactors', 'dotty']
+  command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS)] + BENCHMARKS
   benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
   last_timestep = 0
-  avg_wait_times = { "dotty": [[]], "reactors": [[]]}
-  slice_usages = { "dotty": [[]], "reactors": [[]]}
 
-  current_benchmark = ""
+  total_wait_times = { "dotty": [[]], "reactors": [[]]}
+  total_enqueues = { "dotty": [[]], "reactors": [[]]}
+  total_prio_wait_time = { "dotty": [[]], "reactors": [[]]}
+  total_prio_enqueues = { "dotty": [[]], "reactors": [[]]}
+  total_normal_wait_time = { "dotty": [[]], "reactors": [[]]}
+  total_normal_enqueues = { "dotty": [[]], "reactors": [[]]}
 
-  # dotty_times = []
-  # reactors_times = []
+  current_benchmark = None
 
   times = { "dotty": [], "reactors": []}
 
@@ -100,54 +102,50 @@ def run_benchmark():
             benchmark_output.append(benchmark_line.strip() + "\n")
             f.write(f"Benchmark: {benchmark_line}")
 
-            # if "iteration" in benchmark_line and "completed" in benchmark_line:
-            #   avg_wait_times.append([])
-            #   slice_usages.append([])
-            #   test_names.append(benchmark_line.split()[1])
-
             if "dotty (scala)" in benchmark_line and "started ===" in benchmark_line:
               current_benchmark = "dotty"
             elif "reactors (concurrency)" in benchmark_line and "started ===" in benchmark_line:
               current_benchmark = "reactors"
 
-            if "completed ===" in benchmark_line:
+            if "completed (" in benchmark_line:
               time = re.search(r'\d+\.\d+', benchmark_line).group()
               times[current_benchmark].append(float(time))
 
-              avg_wait_times[current_benchmark].append([])
-              slice_usages[current_benchmark].append([])
+              total_wait_times[current_benchmark].append([])
+              total_enqueues[current_benchmark].append([])
+              total_prio_wait_time[current_benchmark].append([])
+              total_prio_enqueues[current_benchmark].append([])
+              total_normal_wait_time[current_benchmark].append([])
+              total_normal_enqueues[current_benchmark].append([])
             
-
-            # if "dotty (scala)" in benchmark_line and "completed" in benchmark_line:
-            #   time = re.search(r'\d+\.\d+', benchmark_line).group()
-            #   times["dotty"].append(float(time))
-
-            #   avg_wait_times["dotty"].append([])
-            #   slice_usages["dotty"].append([])
-            # if "reactors (concurrency)" in benchmark_line and "completed" in benchmark_line:
-            #   time = re.search(r'\d+\.\d+', benchmark_line).group()
-            #   times["reactors"].append(float(time))
-
-            #   avg_wait_times["reactors"].append([])
-            #   slice_usages["reactors"].append([])
-
       # Truncate the output to fit within the screen
       max_lines = console.size.height - 4  # Adjust based on your terminal size
       scheduler_output_str = str(scheduler_output)
-      if "Stats:" in scheduler_output_str:
-        stats_sections = scheduler_output_str.split("Stats:")
+      if "step:" in scheduler_output_str:
+        stats_sections = scheduler_output_str.split("step:")
         if len(stats_sections) > 2:
           scheduler_output_str = stats_sections[-2]
 
-          timestep = int(re.search(r'Timestep: (\d+)', scheduler_output_str).group(1))
+          timestep = int(re.search(r'(\d+)', scheduler_output_str).group(1))
 
           if timestep is not last_timestep:
-            avg_wait_time = int(re.search(r'Average wait time: (\d+)', scheduler_output_str).group(1))
-            slice_usage = int(re.search(r'Slice usage: (\d+)', scheduler_output_str).group(1))
-            slice_usage_frac = float(re.search(r'Slice usage\(\%\): (\d+\.\d+)', scheduler_output_str).group(1))
+            if not current_benchmark:
+              continue
 
-            avg_wait_times[current_benchmark][-1].append(avg_wait_time)
-            slice_usages[current_benchmark][-1].append(slice_usage_frac)
+            total_wait_time = int(re.search(r'total_wait_time: (\d+)', scheduler_output_str).group(1))
+            total_enqueue = int(re.search(r'total_enqueues: (\d+)', scheduler_output_str).group(1))
+            total_prio_wait = int(re.search(r'total_prio_wait_time: (\d+)', scheduler_output_str).group(1))
+            total_prio_enqueue = int(re.search(r'total_prio_enqueues: (\d+)', scheduler_output_str).group(1))
+            total_normal_wait = int(re.search(r'total_normal_wait_time: (\d+)', scheduler_output_str).group(1))
+            total_normal_enqueue = int(re.search(r'total_normal_enqueues: (\d+)', scheduler_output_str).group(1))
+
+            total_wait_times[current_benchmark][-1].append(total_wait_time)
+            total_enqueues[current_benchmark][-1].append(total_enqueue)
+            total_prio_wait_time[current_benchmark][-1].append(total_prio_wait)
+            total_prio_enqueues[current_benchmark][-1].append(total_prio_enqueue)
+            total_normal_wait_time[current_benchmark][-1].append(total_normal_wait)
+            total_normal_enqueues[current_benchmark][-1].append(total_normal_enqueue)
+            
 
             last_timestep = timestep
 
@@ -164,20 +162,24 @@ def run_benchmark():
     benchmark_process.stdout.close()
     benchmark_process.wait()
 
-    # print("Dotty times: ", dotty_times)
-    # print("Reactors times: ", reactors_times)
-    # save_figures(avg_wait_times[:-1], slice_usages[:-1], test_names)
-
     results = {
       "dotty": {
         "times": times["dotty"],
-        "slice_usages": slice_usages["dotty"],
-        "avg_wait_times": avg_wait_times["dotty"]
+        "total_wait_times": total_wait_times["dotty"],
+        "total_enqueues": total_enqueues["dotty"],
+        "total_prio_wait_time": total_prio_wait_time["dotty"],
+        "total_prio_enqueues": total_prio_enqueues["dotty"],
+        "total_normal_wait_time": total_normal_wait_time["dotty"],
+        "total_normal_enqueues": total_normal_enqueues["dotty"]
       },
       "reactors": {
         "times": times["reactors"],
-        "slice_usages": slice_usages["reactors"],
-        "avg_wait_times": avg_wait_times["reactors"]
+        "total_wait_times": total_wait_times["reactors"],
+        "total_enqueues": total_enqueues["reactors"],
+        "total_prio_wait_time": total_prio_wait_time["reactors"],
+        "total_prio_enqueues": total_prio_enqueues["reactors"],
+        "total_normal_wait_time": total_normal_wait_time["reactors"],
+        "total_normal_enqueues": total_normal_enqueues["reactors"]
       }
     }
 
