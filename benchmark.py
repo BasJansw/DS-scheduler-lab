@@ -12,159 +12,168 @@ import argparse
 import os, sys
 import seaborn as sns
 
-available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", "FIFOScheduler", None]
-SCHEDULER = available_schedulers[4]
-ITERATIONS = 30
-BENCHMARKS = ["dotty", "reactors"]
+SCHEDULERS = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", "FIFOScheduler", None]
+# SCHEDULER = available_schedulers[0]
+SCHEDULER_FLAGS = [["--slice_time_prio=10000000"]]
+ITERATIONS = 1
+BENCHMARKS = ["page-rank", "db-shootout"]
 BUILD = False
-experiment_name = f"{SCHEDULER}-{'+'.join(BENCHMARKS)}-{ITERATIONS}"
 DATA_FOLDER = "zdata/"
+
+if BUILD:
+  subprocess.run(["./build.sh"])
+  
 if not os.path.exists(DATA_FOLDER):
-  os.makedirs(DATA_FOLDER)
-  os.chmod(DATA_FOLDER, 0o777)
-if not os.path.exists(DATA_FOLDER+experiment_name):
-  os.makedirs(DATA_FOLDER+experiment_name)
-  os.chmod(DATA_FOLDER+experiment_name, 0o777)
+    os.makedirs(DATA_FOLDER)
+    os.chmod(DATA_FOLDER, 0o777)
 
-
-def run_benchmark():
+def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
   subprocess.run(["pkill", "-9", "java"])
-  if BUILD:
-    subprocess.run(["./build.sh"])
 
   console = Console()
   if SCHEDULER:
-    scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    scheduler_process = subprocess.Popen(["./run.sh", str(SCHEDULER), "--verbose"] + FLAGS, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
   else:
     scheduler_process = None
-  command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS)] + BENCHMARKS
-  benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-  last_timestep = 0
+  for BENCHMARK in BENCHMARKS:
+    experiment_name = f"{BENCHMARK}-{ITERATIONS}-{SCHEDULER}-{"".join(FLAGS)}"
 
-  total_wait_times = { "dotty": [[]], "reactors": [[]]}
-  total_enqueues = { "dotty": [[]], "reactors": [[]]}
-  total_prio_wait_time = { "dotty": [[]], "reactors": [[]]}
-  total_prio_enqueues = { "dotty": [[]], "reactors": [[]]}
-  total_normal_wait_time = { "dotty": [[]], "reactors": [[]]}
-  total_normal_enqueues = { "dotty": [[]], "reactors": [[]]}
+    print(f"Running {BENCHMARK} with {SCHEDULER} and flags {FLAGS}")
 
-  current_benchmark = None
+    command = ['java', '-jar', 'renaissance-gpl-0.16.0.jar', '-r', str(ITERATIONS), BENCHMARK]
+    benchmark_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-  times = { "dotty": [], "reactors": []}
+    last_timestep = 0
 
-  scheduler_output = Text()
-  benchmark_output = Text()
+    total_wait_times = [[]]
+    total_enqueues = [[]]
+    total_prio_wait_time = [[]]
+    total_prio_enqueues = [[]]
+    total_normal_wait_time = [[]]
+    total_normal_enqueues = [[]]
 
-  with open('output.txt', 'w') as f, Live(console=console, refresh_per_second=4) as live:
-    while True:
-      reads = [benchmark_process.stdout.fileno()]
-      if scheduler_process:
-        reads.append(scheduler_process.stdout.fileno())
-      ret = select.select(reads, [], [])
+    benchmark_started = False
 
-      for fd in ret[0]:
-        if scheduler_process and fd == scheduler_process.stdout.fileno():
-          scheduler_line = scheduler_process.stdout.readline()
-          if scheduler_line:
-            scheduler_output.append(scheduler_line.strip() + "\n")
-            f.write(f"Scheduler: {scheduler_line}")
+    times = []
 
-            
-        if fd == benchmark_process.stdout.fileno():
-          benchmark_line = benchmark_process.stdout.readline()
-          if benchmark_line:
-            benchmark_output.append(benchmark_line.strip() + "\n")
-            f.write(f"Benchmark: {benchmark_line}")
+    scheduler_output = Text()
+    benchmark_output = Text()
 
-            if "dotty (scala)" in benchmark_line and "started ===" in benchmark_line:
-              current_benchmark = "dotty"
-            elif "reactors (concurrency)" in benchmark_line and "started ===" in benchmark_line:
-              current_benchmark = "reactors"
+    with open('output.txt', 'w') as f, Live(console=console, refresh_per_second=4) as live:
+      while True:
+        reads = [benchmark_process.stdout.fileno()]
+        if scheduler_process:
+          reads.append(scheduler_process.stdout.fileno())
+        ret = select.select(reads, [], [])
 
-            if "completed (" in benchmark_line:
-              time = re.search(r'\d+\.\d+', benchmark_line).group()
-              times[current_benchmark].append(float(time))
+        for fd in ret[0]:
+          if scheduler_process and fd == scheduler_process.stdout.fileno():
+            scheduler_line = scheduler_process.stdout.readline()
+            if scheduler_line:
+              scheduler_output.append(scheduler_line.strip() + "\n")
+              f.write(f"Scheduler: {scheduler_line}")
 
-              total_wait_times[current_benchmark].append([])
-              total_enqueues[current_benchmark].append([])
-              total_prio_wait_time[current_benchmark].append([])
-              total_prio_enqueues[current_benchmark].append([])
-              total_normal_wait_time[current_benchmark].append([])
-              total_normal_enqueues[current_benchmark].append([])
-            
-      # Truncate the output to fit within the screen
-      max_lines = console.size.height - 4  # Adjust based on your terminal size
-      scheduler_output_str = str(scheduler_output)
-      if "step:" in scheduler_output_str:
-        stats_sections = scheduler_output_str.split("step:")
-        if len(stats_sections) > 2:
-          scheduler_output_str = stats_sections[-2]
+              
+          if fd == benchmark_process.stdout.fileno():
+            benchmark_line = benchmark_process.stdout.readline()
+            if benchmark_line:
+              benchmark_output.append(benchmark_line.strip() + "\n")
+              f.write(f"Benchmark: {benchmark_line}")
 
-          timestep = int(re.search(r'(\d+)', scheduler_output_str).group(1))
+              # if "dotty (scala)" in benchmark_line and "started ===" in benchmark_line:
+              #   current_benchmark = "dotty"
+              # elif "reactors (concurrency)" in benchmark_line and "started ===" in benchmark_line:
+              #   current_benchmark = "reactors"
+              # elif "page-rank (apache-spark)" in benchmark_line and "started ===" in benchmark_line:
+              #   current_benchmark = "page-rank"
+              # elif "db-shootout (database)" in benchmark_line and "started ===" in benchmark_line:
+              #   current_benchmark = "db-shootout"
 
-          if timestep is not last_timestep:
-            if not current_benchmark:
-              continue
+              if "started ===" in benchmark_line:
+                benchmark_started = True
 
-            total_wait_time = int(re.search(r'total_wait_time: (\d+)', scheduler_output_str).group(1))
-            total_enqueue = int(re.search(r'total_enqueues: (\d+)', scheduler_output_str).group(1))
-            total_wait_times[current_benchmark][-1].append(total_wait_time)
-            total_enqueues[current_benchmark][-1].append(total_enqueue)
+              if "completed (" in benchmark_line:
+                time = re.search(r'\d+\.\d+', benchmark_line).group()
+                times.append(float(time))
 
-            try:
-              total_prio_wait = int(re.search(r'total_prio_wait_time: (\d+)', scheduler_output_str).group(1))
-              total_prio_enqueue = int(re.search(r'total_prio_enqueues: (\d+)', scheduler_output_str).group(1))
-              total_normal_wait = int(re.search(r'total_normal_wait_time: (\d+)', scheduler_output_str).group(1))
-              total_normal_enqueue = int(re.search(r'total_normal_enqueues: (\d+)', scheduler_output_str).group(1))
-              total_prio_wait_time[current_benchmark][-1].append(total_prio_wait)
-              total_prio_enqueues[current_benchmark][-1].append(total_prio_enqueue)
-              total_normal_wait_time[current_benchmark][-1].append(total_normal_wait)
-              total_normal_enqueues[current_benchmark][-1].append(total_normal_enqueue)
-            except:
-              pass
+                total_wait_times.append([])
+                total_enqueues.append([])
+                total_prio_wait_time.append([])
+                total_prio_enqueues.append([])
+                total_normal_wait_time.append([])
+                total_normal_enqueues.append([])
+              
+        # Truncate the output to fit within the screen
+        max_lines = console.size.height - 4  # Adjust based on your terminal size
+        scheduler_output_str = str(scheduler_output)
+        if "step:" in scheduler_output_str:
+          stats_sections = scheduler_output_str.split("step:")
+          if len(stats_sections) > 2:
+            scheduler_output_str = stats_sections[-2]
 
-            last_timestep = timestep
+            timestep = int(re.search(r'(\d+)', scheduler_output_str).group(1))
 
-      truncated_scheduler_output = Text("\n".join(scheduler_output_str.splitlines()[-max_lines:]))
-      truncated_benchmark_output = Text("\n".join(str(benchmark_output).splitlines()[-max_lines:]))
+            if timestep is not last_timestep and benchmark_started:
+              total_wait_time = int(re.search(r'total_wait_time: (\d+)', scheduler_output_str).group(1))
+              total_enqueue = int(re.search(r'total_enqueues: (\d+)', scheduler_output_str).group(1))
+              total_wait_times[-1].append(total_wait_time)
+              total_enqueues[-1].append(total_enqueue)
 
-      live.update(Columns([Panel(truncated_benchmark_output, title="Benchmark"), Panel(truncated_scheduler_output, title="Scheduler")]))
+              try:
+                total_prio_wait = int(re.search(r'total_prio_wait_time: (\d+)', scheduler_output_str).group(1))
+                total_prio_enqueue = int(re.search(r'total_prio_enqueues: (\d+)', scheduler_output_str).group(1))
+                total_normal_wait = int(re.search(r'total_normal_wait_time: (\d+)', scheduler_output_str).group(1))
+                total_normal_enqueue = int(re.search(r'total_normal_enqueues: (\d+)', scheduler_output_str).group(1))
+                total_prio_wait_time[-1].append(total_prio_wait)
+                total_prio_enqueues[-1].append(total_prio_enqueue)
+                total_normal_wait_time[-1].append(total_normal_wait)
+                total_normal_enqueues[-1].append(total_normal_enqueue)
+              except:
+                pass
 
-      if benchmark_process.poll() is not None:
-        break
+              last_timestep = timestep
 
-    if scheduler_process: 
-      scheduler_process.terminate()
-      scheduler_process.wait()
-      benchmark_process.stdout.close()
-      benchmark_process.wait()
+        truncated_scheduler_output = Text("\n".join(scheduler_output_str.splitlines()[-max_lines:]))
+        truncated_benchmark_output = Text("\n".join(str(benchmark_output).splitlines()[-max_lines:]))
 
-    results = {
-      "dotty": {
-        "times": times["dotty"],
-        "total_wait_times": total_wait_times["dotty"],
-        "total_enqueues": total_enqueues["dotty"],
-        "total_prio_wait_time": total_prio_wait_time["dotty"],
-        "total_prio_enqueues": total_prio_enqueues["dotty"],
-        "total_normal_wait_time": total_normal_wait_time["dotty"],
-        "total_normal_enqueues": total_normal_enqueues["dotty"]
-      },
-      "reactors": {
-        "times": times["reactors"],
-        "total_wait_times": total_wait_times["reactors"],
-        "total_enqueues": total_enqueues["reactors"],
-        "total_prio_wait_time": total_prio_wait_time["reactors"],
-        "total_prio_enqueues": total_prio_enqueues["reactors"],
-        "total_normal_wait_time": total_normal_wait_time["reactors"],
-        "total_normal_enqueues": total_normal_enqueues["reactors"]
+        live.update(Columns([Panel(truncated_benchmark_output, title="Benchmark"), Panel(truncated_scheduler_output, title="Scheduler")]))
+
+        if benchmark_process.poll() is not None:
+          break
+
+      if scheduler_process: 
+        scheduler_process.terminate()
+        scheduler_process.wait()
+        benchmark_process.stdout.close()
+        benchmark_process.wait()
+
+      results = {
+        "times": times,
+        "total_wait_times": total_wait_times,
+        "total_enqueues": total_enqueues,
+        "total_prio_wait_time": total_prio_wait_time,
+        "total_prio_enqueues": total_prio_enqueues,
+        "total_normal_wait_time": total_normal_wait_time,
+        "total_normal_enqueues": total_normal_enqueues,
+        "scheduler_output": str(scheduler_output),
+        "benchmark_output": str(benchmark_output)
       }
-    }
 
-    with open(f'{DATA_FOLDER}{experiment_name}/results.json', 'w') as json_file:
-      # json.dumps(results, json_file, indent=4)
-      json_file.write(json.dumps(results, indent=4))
+      with open(f'{DATA_FOLDER}{experiment_name}.json', 'w') as json_file:
+        # json.dumps(results, json_file, indent=4)
+        json_file.write(json.dumps(results, indent=4))
 
+def run_benchmarks():
+  for SCHEDULER in SCHEDULERS:
+    for FLAGS in SCHEDULER_FLAGS:
+      try:
+        run_benchmarks_with_scheduler(SCHEDULER, FLAGS)
+      except e:
+        print(f"Failed to run {SCHEDULER} with flags {FLAGS}")
+        print(e)
+        pass
+    
 if __name__ == "__main__":
   if not os.geteuid() == 0:
     sys.exit("Please run with sudo")
@@ -181,4 +190,4 @@ if __name__ == "__main__":
   BUILD = args.build
 
 
-  run_benchmark()
+  run_benchmarks()
