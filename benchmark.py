@@ -13,7 +13,7 @@ import os, sys
 import seaborn as sns
 
 available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", "FIFOScheduler", None]
-SCHEDULER = available_schedulers[4]
+SCHEDULER = available_schedulers[5]
 ITERATIONS = 30
 BENCHMARKS = ["dotty", "reactors"]
 BUILD = False
