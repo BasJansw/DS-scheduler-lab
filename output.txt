@@ -1,95 +1,95 @@
 Benchmark: ====== dotty (scala) [default], iteration 0 started ======
-Benchmark: GC before operation: completed in 36.591 ms, heap usage 11.950 MB -> 6.564 MB.
-Benchmark: ====== dotty (scala) [default], iteration 0 completed (16598.564 ms) ======
+Benchmark: GC before operation: completed in 13.838 ms, heap usage 13.926 MB -> 6.530 MB.
+Benchmark: ====== dotty (scala) [default], iteration 0 completed (15953.668 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 1 started ======
-Benchmark: GC before operation: completed in 69.573 ms, heap usage 75.376 MB -> 23.953 MB.
-Benchmark: ====== dotty (scala) [default], iteration 1 completed (6253.157 ms) ======
+Benchmark: GC before operation: completed in 67.145 ms, heap usage 89.492 MB -> 23.860 MB.
+Benchmark: ====== dotty (scala) [default], iteration 1 completed (7696.735 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 2 started ======
-Benchmark: GC before operation: completed in 98.950 ms, heap usage 76.704 MB -> 23.978 MB.
-Benchmark: ====== dotty (scala) [default], iteration 2 completed (5043.557 ms) ======
+Benchmark: GC before operation: completed in 64.415 ms, heap usage 78.600 MB -> 23.879 MB.
+Benchmark: ====== dotty (scala) [default], iteration 2 completed (5192.519 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 3 started ======
-Benchmark: GC before operation: completed in 56.648 ms, heap usage 71.847 MB -> 23.991 MB.
-Benchmark: ====== dotty (scala) [default], iteration 3 completed (3912.241 ms) ======
+Benchmark: GC before operation: completed in 84.360 ms, heap usage 86.172 MB -> 23.897 MB.
+Benchmark: ====== dotty (scala) [default], iteration 3 completed (4523.012 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 4 started ======
-Benchmark: GC before operation: completed in 86.893 ms, heap usage 84.309 MB -> 24.000 MB.
-Benchmark: ====== dotty (scala) [default], iteration 4 completed (3440.131 ms) ======
+Benchmark: GC before operation: completed in 69.614 ms, heap usage 67.897 MB -> 23.899 MB.
+Benchmark: ====== dotty (scala) [default], iteration 4 completed (4041.302 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 5 started ======
-Benchmark: GC before operation: completed in 94.790 ms, heap usage 74.500 MB -> 24.024 MB.
-Benchmark: ====== dotty (scala) [default], iteration 5 completed (3381.438 ms) ======
+Benchmark: GC before operation: completed in 72.179 ms, heap usage 87.899 MB -> 23.916 MB.
+Benchmark: ====== dotty (scala) [default], iteration 5 completed (3582.538 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 6 started ======
-Benchmark: GC before operation: completed in 89.741 ms, heap usage 62.985 MB -> 24.032 MB.
-Benchmark: ====== dotty (scala) [default], iteration 6 completed (3352.733 ms) ======
+Benchmark: GC before operation: completed in 81.060 ms, heap usage 88.794 MB -> 23.926 MB.
+Benchmark: ====== dotty (scala) [default], iteration 6 completed (3332.593 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 7 started ======
-Benchmark: GC before operation: completed in 56.873 ms, heap usage 91.528 MB -> 24.042 MB.
-Benchmark: ====== dotty (scala) [default], iteration 7 completed (2942.240 ms) ======
+Benchmark: GC before operation: completed in 67.397 ms, heap usage 77.394 MB -> 23.938 MB.
+Benchmark: ====== dotty (scala) [default], iteration 7 completed (3218.173 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 8 started ======
-Benchmark: GC before operation: completed in 58.878 ms, heap usage 84.535 MB -> 24.046 MB.
-Benchmark: ====== dotty (scala) [default], iteration 8 completed (2656.673 ms) ======
+Benchmark: GC before operation: completed in 71.469 ms, heap usage 92.919 MB -> 23.943 MB.
+Benchmark: ====== dotty (scala) [default], iteration 8 completed (3263.055 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 9 started ======
-Benchmark: GC before operation: completed in 59.025 ms, heap usage 83.449 MB -> 24.056 MB.
-Benchmark: ====== dotty (scala) [default], iteration 9 completed (2466.567 ms) ======
+Benchmark: GC before operation: completed in 141.366 ms, heap usage 66.919 MB -> 23.955 MB.
+Benchmark: ====== dotty (scala) [default], iteration 9 completed (2743.586 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 10 started ======
-Benchmark: GC before operation: completed in 85.449 ms, heap usage 85.056 MB -> 24.058 MB.
-Benchmark: ====== dotty (scala) [default], iteration 10 completed (2312.787 ms) ======
+Benchmark: GC before operation: completed in 61.931 ms, heap usage 102.439 MB -> 23.958 MB.
+Benchmark: ====== dotty (scala) [default], iteration 10 completed (2592.879 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 11 started ======
-Benchmark: GC before operation: completed in 60.018 ms, heap usage 71.050 MB -> 24.065 MB.
-Benchmark: ====== dotty (scala) [default], iteration 11 completed (2580.125 ms) ======
+Benchmark: GC before operation: completed in 87.924 ms, heap usage 87.919 MB -> 23.964 MB.
+Benchmark: ====== dotty (scala) [default], iteration 11 completed (2472.914 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 12 started ======
-Benchmark: GC before operation: completed in 60.591 ms, heap usage 66.056 MB -> 24.065 MB.
-Benchmark: ====== dotty (scala) [default], iteration 12 completed (2289.605 ms) ======
+Benchmark: GC before operation: completed in 91.141 ms, heap usage 88.464 MB -> 23.967 MB.
+Benchmark: ====== dotty (scala) [default], iteration 12 completed (2341.090 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 13 started ======
-Benchmark: GC before operation: completed in 80.832 ms, heap usage 108.562 MB -> 24.073 MB.
-Benchmark: ====== dotty (scala) [default], iteration 13 completed (2191.762 ms) ======
+Benchmark: GC before operation: completed in 65.075 ms, heap usage 118.967 MB -> 23.972 MB.
+Benchmark: ====== dotty (scala) [default], iteration 13 completed (2713.104 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 14 started ======
-Benchmark: GC before operation: completed in 63.318 ms, heap usage 137.254 MB -> 24.074 MB.
-Benchmark: ====== dotty (scala) [default], iteration 14 completed (2222.247 ms) ======
+Benchmark: GC before operation: completed in 86.152 ms, heap usage 66.463 MB -> 23.975 MB.
+Benchmark: ====== dotty (scala) [default], iteration 14 completed (2263.850 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 15 started ======
-Benchmark: GC before operation: completed in 62.195 ms, heap usage 108.074 MB -> 24.082 MB.
-Benchmark: ====== dotty (scala) [default], iteration 15 completed (2030.593 ms) ======
+Benchmark: GC before operation: completed in 92.110 ms, heap usage 68.472 MB -> 23.980 MB.
+Benchmark: ====== dotty (scala) [default], iteration 15 completed (2578.411 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 16 started ======
-Benchmark: GC before operation: completed in 95.556 ms, heap usage 91.485 MB -> 24.085 MB.
-Benchmark: ====== dotty (scala) [default], iteration 16 completed (1780.002 ms) ======
+Benchmark: GC before operation: completed in 90.536 ms, heap usage 65.480 MB -> 23.984 MB.
+Benchmark: ====== dotty (scala) [default], iteration 16 completed (2324.292 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 17 started ======
-Benchmark: GC before operation: completed in 62.490 ms, heap usage 115.079 MB -> 24.092 MB.
-Benchmark: ====== dotty (scala) [default], iteration 17 completed (1982.684 ms) ======
+Benchmark: GC before operation: completed in 71.200 ms, heap usage 100.482 MB -> 23.993 MB.
+Benchmark: ====== dotty (scala) [default], iteration 17 completed (2622.822 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 18 started ======
-Benchmark: GC before operation: completed in 61.176 ms, heap usage 77.485 MB -> 24.095 MB.
-Benchmark: ====== dotty (scala) [default], iteration 18 completed (2140.470 ms) ======
+Benchmark: GC before operation: completed in 73.836 ms, heap usage 86.419 MB -> 23.998 MB.
+Benchmark: ====== dotty (scala) [default], iteration 18 completed (2211.240 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 19 started ======
-Benchmark: GC before operation: completed in 62.592 ms, heap usage 105.496 MB -> 24.102 MB.
-Benchmark: ====== dotty (scala) [default], iteration 19 completed (1779.351 ms) ======
+Benchmark: GC before operation: completed in 101.461 ms, heap usage 109.448 MB -> 24.006 MB.
+Benchmark: ====== dotty (scala) [default], iteration 19 completed (2361.329 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 20 started ======
-Benchmark: GC before operation: completed in 67.692 ms, heap usage 83.485 MB -> 24.103 MB.
-Benchmark: ====== dotty (scala) [default], iteration 20 completed (1759.644 ms) ======
+Benchmark: GC before operation: completed in 70.617 ms, heap usage 97.919 MB -> 24.008 MB.
+Benchmark: ====== dotty (scala) [default], iteration 20 completed (2074.168 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 21 started ======
-Benchmark: GC before operation: completed in 63.155 ms, heap usage 85.454 MB -> 24.109 MB.
-Benchmark: ====== dotty (scala) [default], iteration 21 completed (1847.150 ms) ======
+Benchmark: GC before operation: completed in 75.264 ms, heap usage 66.919 MB -> 24.015 MB.
+Benchmark: ====== dotty (scala) [default], iteration 21 completed (2086.108 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 22 started ======
-Benchmark: GC before operation: completed in 64.937 ms, heap usage 113.100 MB -> 24.112 MB.
-Benchmark: ====== dotty (scala) [default], iteration 22 completed (1784.903 ms) ======
+Benchmark: GC before operation: completed in 72.011 ms, heap usage 82.919 MB -> 24.016 MB.
+Benchmark: ====== dotty (scala) [default], iteration 22 completed (2041.205 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 23 started ======
-Benchmark: GC before operation: completed in 63.387 ms, heap usage 77.485 MB -> 24.119 MB.
-Benchmark: ====== dotty (scala) [default], iteration 23 completed (1732.187 ms) ======
+Benchmark: GC before operation: completed in 70.940 ms, heap usage 109.503 MB -> 24.025 MB.
+Benchmark: ====== dotty (scala) [default], iteration 23 completed (1966.271 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 24 started ======
-Benchmark: GC before operation: completed in 72.771 ms, heap usage 61.353 MB -> 24.120 MB.
-Benchmark: ====== dotty (scala) [default], iteration 24 completed (1658.406 ms) ======
+Benchmark: GC before operation: completed in 69.679 ms, heap usage 75.419 MB -> 24.026 MB.
+Benchmark: ====== dotty (scala) [default], iteration 24 completed (2144.544 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 25 started ======
-Benchmark: GC before operation: completed in 76.266 ms, heap usage 65.379 MB -> 24.125 MB.
-Benchmark: ====== dotty (scala) [default], iteration 25 completed (1797.822 ms) ======
+Benchmark: GC before operation: completed in 88.354 ms, heap usage 62.827 MB -> 24.032 MB.
+Benchmark: ====== dotty (scala) [default], iteration 25 completed (1867.714 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 26 started ======
-Benchmark: GC before operation: completed in 61.860 ms, heap usage 105.078 MB -> 24.128 MB.
-Benchmark: ====== dotty (scala) [default], iteration 26 completed (1619.212 ms) ======
+Benchmark: GC before operation: completed in 61.207 ms, heap usage 65.919 MB -> 24.030 MB.
+Benchmark: ====== dotty (scala) [default], iteration 26 completed (2018.860 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 27 started ======
-Benchmark: GC before operation: completed in 65.893 ms, heap usage 86.985 MB -> 24.133 MB.
-Benchmark: ====== dotty (scala) [default], iteration 27 completed (1724.284 ms) ======
+Benchmark: GC before operation: completed in 70.710 ms, heap usage 77.419 MB -> 24.037 MB.
+Benchmark: ====== dotty (scala) [default], iteration 27 completed (2043.541 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 28 started ======
-Benchmark: GC before operation: completed in 69.075 ms, heap usage 77.266 MB -> 24.134 MB.
-Benchmark: ====== dotty (scala) [default], iteration 28 completed (1606.225 ms) ======
+Benchmark: GC before operation: completed in 63.792 ms, heap usage 64.958 MB -> 24.037 MB.
+Benchmark: ====== dotty (scala) [default], iteration 28 completed (2071.683 ms) ======
 Benchmark: ====== dotty (scala) [default], iteration 29 started ======
-Benchmark: GC before operation: completed in 88.381 ms, heap usage 82.985 MB -> 24.140 MB.
-Benchmark: ====== dotty (scala) [default], iteration 29 completed (1621.353 ms) ======
+Benchmark: GC before operation: completed in 91.049 ms, heap usage 85.410 MB -> 24.045 MB.
+Benchmark: ====== dotty (scala) [default], iteration 29 completed (1999.169 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 0 started ======
-Benchmark: GC before operation: completed in 104.873 ms, heap usage 68.485 MB -> 9.515 MB.
+Benchmark: GC before operation: completed in 87.426 ms, heap usage 67.919 MB -> 9.791 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -100,9 +100,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 0 completed (21028.504 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 0 completed (20488.279 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 1 started ======
-Benchmark: GC before operation: completed in 19.472 ms, heap usage 576.835 MB -> 10.824 MB.
+Benchmark: GC before operation: completed in 22.965 ms, heap usage 495.938 MB -> 10.869 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -113,9 +113,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 1 completed (16370.781 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 1 completed (16339.191 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 2 started ======
-Benchmark: GC before operation: completed in 18.859 ms, heap usage 609.831 MB -> 10.831 MB.
+Benchmark: GC before operation: completed in 19.584 ms, heap usage 657.575 MB -> 10.876 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -126,9 +126,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 2 completed (15903.640 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 2 completed (16468.967 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 3 started ======
-Benchmark: GC before operation: completed in 18.470 ms, heap usage 628.337 MB -> 10.832 MB.
+Benchmark: GC before operation: completed in 19.794 ms, heap usage 572.185 MB -> 10.244 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -139,9 +139,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 3 completed (15780.620 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 3 completed (16949.373 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 4 started ======
-Benchmark: GC before operation: completed in 18.374 ms, heap usage 677.337 MB -> 10.832 MB.
+Benchmark: GC before operation: completed in 21.927 ms, heap usage 633.718 MB -> 10.244 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -152,9 +152,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 4 completed (15717.746 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 4 completed (16754.233 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 5 started ======
-Benchmark: GC before operation: completed in 15.494 ms, heap usage 480.184 MB -> 10.832 MB.
+Benchmark: GC before operation: completed in 19.812 ms, heap usage 555.518 MB -> 10.244 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -165,9 +165,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 5 completed (16062.813 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 5 completed (16850.983 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 6 started ======
-Benchmark: GC before operation: completed in 15.634 ms, heap usage 652.332 MB -> 10.832 MB.
+Benchmark: GC before operation: completed in 18.320 ms, heap usage 650.191 MB -> 10.245 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -178,9 +178,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 6 completed (16029.931 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 6 completed (16610.132 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 7 started ======
-Benchmark: GC before operation: completed in 17.366 ms, heap usage 611.843 MB -> 10.175 MB.
+Benchmark: GC before operation: completed in 23.098 ms, heap usage 623.799 MB -> 10.245 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -191,9 +191,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 7 completed (15907.779 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 7 completed (15424.662 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 8 started ======
-Benchmark: GC before operation: completed in 28.453 ms, heap usage 559.614 MB -> 10.092 MB.
+Benchmark: GC before operation: completed in 22.041 ms, heap usage 586.996 MB -> 10.187 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -204,9 +204,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 8 completed (15900.396 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 8 completed (16042.047 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 9 started ======
-Benchmark: GC before operation: completed in 14.854 ms, heap usage 607.972 MB -> 10.094 MB.
+Benchmark: GC before operation: completed in 25.814 ms, heap usage 635.127 MB -> 10.187 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -217,9 +217,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 9 completed (15682.713 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 9 completed (16537.015 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 10 started ======
-Benchmark: GC before operation: completed in 22.839 ms, heap usage 577.984 MB -> 10.093 MB.
+Benchmark: GC before operation: completed in 19.293 ms, heap usage 573.270 MB -> 10.187 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -230,9 +230,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 10 completed (15898.938 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 10 completed (16045.861 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 11 started ======
-Benchmark: GC before operation: completed in 14.254 ms, heap usage 548.522 MB -> 10.093 MB.
+Benchmark: GC before operation: completed in 16.371 ms, heap usage 530.490 MB -> 10.188 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -243,9 +243,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 11 completed (15765.244 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 11 completed (17060.260 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 12 started ======
-Benchmark: GC before operation: completed in 16.672 ms, heap usage 646.472 MB -> 10.094 MB.
+Benchmark: GC before operation: completed in 16.313 ms, heap usage 666.336 MB -> 10.189 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -256,9 +256,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 12 completed (15783.333 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 12 completed (16768.069 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 13 started ======
-Benchmark: GC before operation: completed in 15.068 ms, heap usage 591.288 MB -> 10.094 MB.
+Benchmark: GC before operation: completed in 18.913 ms, heap usage 653.005 MB -> 10.189 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -269,9 +269,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 13 completed (16673.726 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 13 completed (18896.048 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 14 started ======
-Benchmark: GC before operation: completed in 14.673 ms, heap usage 504.228 MB -> 10.093 MB.
+Benchmark: GC before operation: completed in 22.962 ms, heap usage 524.830 MB -> 10.189 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -282,9 +282,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 14 completed (15954.402 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 14 completed (18382.155 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 15 started ======
-Benchmark: GC before operation: completed in 26.399 ms, heap usage 654.370 MB -> 11.929 MB.
+Benchmark: GC before operation: completed in 21.079 ms, heap usage 643.867 MB -> 10.186 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -295,9 +295,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 15 completed (15910.978 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 15 completed (17055.193 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 16 started ======
-Benchmark: GC before operation: completed in 14.837 ms, heap usage 542.291 MB -> 10.093 MB.
+Benchmark: GC before operation: completed in 19.465 ms, heap usage 579.270 MB -> 10.186 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -308,9 +308,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 16 completed (15601.325 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 16 completed (16950.327 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 17 started ======
-Benchmark: GC before operation: completed in 18.154 ms, heap usage 696.472 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 25.595 ms, heap usage 45.387 MB -> 9.617 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -321,9 +321,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 17 completed (15938.327 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 17 completed (15638.749 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 18 started ======
-Benchmark: GC before operation: completed in 13.096 ms, heap usage 76.449 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 16.337 ms, heap usage 57.652 MB -> 9.620 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -334,9 +334,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 18 completed (15977.096 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 18 completed (15736.603 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 19 started ======
-Benchmark: GC before operation: completed in 12.610 ms, heap usage 32.501 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 18.209 ms, heap usage 661.349 MB -> 9.617 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -347,9 +347,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 19 completed (16125.628 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 19 completed (16030.089 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 20 started ======
-Benchmark: GC before operation: completed in 16.023 ms, heap usage 544.973 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 18.117 ms, heap usage 531.660 MB -> 9.616 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -360,9 +360,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 20 completed (16249.743 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 20 completed (16450.441 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 21 started ======
-Benchmark: GC before operation: completed in 16.372 ms, heap usage 604.396 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 35.762 ms, heap usage 600.584 MB -> 9.617 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -373,9 +373,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 21 completed (15468.640 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 21 completed (15768.677 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 22 started ======
-Benchmark: GC before operation: completed in 13.879 ms, heap usage 521.424 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 17.548 ms, heap usage 665.116 MB -> 9.617 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -386,9 +386,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 22 completed (16347.935 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 22 completed (17332.805 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 23 started ======
-Benchmark: GC before operation: completed in 14.085 ms, heap usage 545.875 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 18.744 ms, heap usage 464.527 MB -> 9.618 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -399,9 +399,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 23 completed (16551.153 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 23 completed (16318.556 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 24 started ======
-Benchmark: GC before operation: completed in 14.740 ms, heap usage 583.793 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 22.000 ms, heap usage 582.036 MB -> 9.617 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -412,9 +412,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 24 completed (15935.815 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 24 completed (16079.309 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 25 started ======
-Benchmark: GC before operation: completed in 36.130 ms, heap usage 686.576 MB -> 9.563 MB.
+Benchmark: GC before operation: completed in 15.248 ms, heap usage 509.616 MB -> 9.618 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -425,9 +425,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 25 completed (16178.633 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 25 completed (16523.807 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 26 started ======
-Benchmark: GC before operation: completed in 14.715 ms, heap usage 589.991 MB -> 9.562 MB.
+Benchmark: GC before operation: completed in 16.016 ms, heap usage 469.617 MB -> 9.618 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -438,9 +438,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 26 completed (15949.136 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 26 completed (16089.784 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 27 started ======
-Benchmark: GC before operation: completed in 15.154 ms, heap usage 598.585 MB -> 9.563 MB.
+Benchmark: GC before operation: completed in 21.557 ms, heap usage 612.872 MB -> 9.618 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -451,9 +451,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 27 completed (16092.745 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 27 completed (16177.864 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 28 started ======
-Benchmark: GC before operation: completed in 14.932 ms, heap usage 636.881 MB -> 9.563 MB.
+Benchmark: GC before operation: completed in 19.716 ms, heap usage 627.431 MB -> 9.618 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -464,9 +464,9 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 28 completed (15751.971 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 28 completed (16215.717 ms) ======
 Benchmark: ====== reactors (concurrency) [default], iteration 29 started ======
-Benchmark: GC before operation: completed in 14.691 ms, heap usage 634.562 MB -> 9.563 MB.
+Benchmark: GC before operation: completed in 16.783 ms, heap usage 618.543 MB -> 9.618 MB.
 Benchmark: Baseline workload: Reactor scheduling events
 Benchmark: BigBench workload: Many-to-many message ping pong
 Benchmark: CountingActor workload: Single reactor event processing
@@ -477,4 +477,4 @@ Benchmark: PingPong workload: Reactor pair sequential ping pong performance
 Benchmark: StreamingPingPong workload: Reactor pair overlapping ping pong performance
 Benchmark: Roundabout workload: Many channels reactor performance
 Benchmark: ThreadRing workload: Reactor ring forwarding performance
-Benchmark: ====== reactors (concurrency) [default], iteration 29 completed (16094.587 ms) ======
+Benchmark: ====== reactors (concurrency) [default], iteration 29 completed (17138.454 ms) ======

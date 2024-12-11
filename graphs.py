@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # box plot total wait times
 
 # ALL COMPAREABLES
-compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "None-dotty+reactors-30"]
+compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
 
 
 
@@ -49,13 +49,21 @@ for compareable in compareables:
     with open(filename, 'r') as json_file:
         data[compareable] = json.load(json_file)
 
-
+# filter out first 10 of dotty
+for compareable in compareables:
+    data[compareable][BENCHMARK]["times"] = data[compareable][BENCHMARK]["times"][15:]
+    data[compareable][BENCHMARK]["total_wait_times"] = data[compareable][BENCHMARK]["total_wait_times"][15:]
+    data[compareable][BENCHMARK]["total_enqueues"] = data[compareable][BENCHMARK]["total_enqueues"][15:]
+    data[compareable][BENCHMARK]["total_prio_wait_time"] = data[compareable][BENCHMARK]["total_prio_wait_time"][15:]
+    data[compareable][BENCHMARK]["total_prio_enqueues"] = data[compareable][BENCHMARK]["total_prio_enqueues"][15:]
+    data[compareable][BENCHMARK]["total_normal_wait_time"] = data[compareable][BENCHMARK]["total_normal_wait_time"][15:]
+    data[compareable][BENCHMARK]["total_normal_enqueues"] = data[compareable][BENCHMARK]["total_normal_enqueues"][15:]
 
 
 ####################################
 # TOTAL TIMES
 ####################################
-compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "None-dotty+reactors-30"]
+compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
 
 # make box plot for total times
 total_times = {}
@@ -109,16 +117,3 @@ for compareable in compareables:
 
 percentage_prio_wait_times = [[prio_wait/total_wait for prio_wait, total_wait in zip(total_prio_wait_times[compareable], total_wait_times[compareable])] for compareable in compareables]
 plot_boxplot(percentage_prio_wait_times, "Total Prio Wait Time (%)", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
-
-
-
-
-
-
-
-
-# # make pdf for slice usage
-# benchmark = "PrioSchedWeightedAvg-dotty+reactors-30"
-# slice_usage = data[benchmark][BENCHMARK]["slice_usage"]
-# slice_usage = [item for sublist in slice_usage for item in sublist]
-# plot_pdf([slice_usage], "Slice Usage", "Slice Usage", f"slice-usage-{BENCHMARK}")

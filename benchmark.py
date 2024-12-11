@@ -12,8 +12,8 @@ import argparse
 import os, sys
 import seaborn as sns
 
-available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", None]
-SCHEDULER = available_schedulers[3]
+available_schedulers = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", "FIFOScheduler", None]
+SCHEDULER = available_schedulers[4]
 ITERATIONS = 30
 BENCHMARKS = ["dotty", "reactors"]
 BUILD = False
