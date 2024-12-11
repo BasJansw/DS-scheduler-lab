@@ -18,13 +18,19 @@ DATA_FOLDER = "zdata/"
 # Ensure the necessary folders exist
 os.makedirs(f"{DATA_FOLDER}/graphs", exist_ok=True)
 
-def plot_boxplot(data, title, ylabel, filename):
+def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.figure(figsize=(10, 6))
     plt.boxplot(data)
-    plt.xlabel('Scheduler')
+    if xlabel is None:
+        plt.xlabel('Scheduler')
+    else:
+        plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
+    if xticks is None:
     plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
+    else:
+        plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(f"{DATA_FOLDER}/graphs/boxplot-{filename}.png")
@@ -81,7 +87,7 @@ plot_boxplot([total_times[compareable] for compareable in valid_compareables], "
 total_enqueues = {}
 for compareable in valid_compareables:
     total_enqueues[compareable] = data[compareable][BENCHMARK]["total_enqueues"]
-    total_enqueues[compareable] = [sum(enqueues) for enqueues in total_enqueues[compareable] if len(enqueues) > 5]
+    total_enqueues[compareable] = [sum(enqueues) for enqueues in total_enqueues[compareable] if len(enqueues) > FILTER_FIRST_N]
 
 plot_boxplot([total_enqueues[compareable] for compareable in valid_compareables], "Total Enqueues", "Enqueues", f"total-enqueues-{BENCHMARK}")
 
@@ -89,7 +95,7 @@ plot_boxplot([total_enqueues[compareable] for compareable in valid_compareables]
 total_wait_times = {}
 for compareable in valid_compareables:
     total_wait_times[compareable] = data[compareable][BENCHMARK]["total_wait_times"]
-    total_wait_times[compareable] = [sum(wait_times) for wait_times in total_wait_times[compareable] if len(wait_times) > 5]
+    total_wait_times[compareable] = [sum(wait_times) for wait_times in total_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
 plot_boxplot([total_wait_times[compareable] for compareable in valid_compareables], "Total Wait Time", "Time (ms)", f"total-wait-times-{BENCHMARK}")
 
@@ -102,7 +108,7 @@ prio_compareables = [c for c in valid_compareables if "Prio" in c]
 total_prio_enqueues = {}
 for compareable in prio_compareables:
     total_prio_enqueues[compareable] = data[compareable][BENCHMARK]["total_prio_enqueues"]
-    total_prio_enqueues[compareable] = [sum(enqueues) for enqueues in total_prio_enqueues[compareable] if len(enqueues) > 5]
+    total_prio_enqueues[compareable] = [sum(enqueues) for enqueues in total_prio_enqueues[compareable] if len(enqueues) > FILTER_FIRST_N]
 
 percentage_prio_enqueues = [[prio_enqueue/total_enqueue for prio_enqueue, total_enqueue in zip(total_prio_enqueues[compareable], total_enqueues[compareable])] for compareable in prio_compareables]
 plot_boxplot(percentage_prio_enqueues, "Total Prio Enqueues (%)", "Enqueues", f"total-prio-enqueues-{BENCHMARK}")
@@ -111,7 +117,24 @@ plot_boxplot(percentage_prio_enqueues, "Total Prio Enqueues (%)", "Enqueues", f"
 total_prio_wait_times = {}
 for compareable in prio_compareables:
     total_prio_wait_times[compareable] = data[compareable][BENCHMARK]["total_prio_wait_time"]
-    total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > 5]
+    total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
-percentage_prio_wait_times = [[prio_wait/total_wait for prio_wait, total_wait in zip(total_prio_wait_times[compareable], total_wait_times[compareable])] for compareable in prio_compareables]
-plot_boxplot(percentage_prio_wait_times, "Total Prio Wait Time (%)", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
+percentage_prio_wait_times = [[prio_wait/total_wait for prio_wait, total_wait in zip(total_prio_wait_times[compareable], total_wait_times[compareable])] for compareable in compareables]
+# plot_boxplot(percentage_prio_wait_times, "Total Prio Wait Time (%)", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
+
+# make box plot for normal and prio wait time
+total_prio_wait_times = {}
+total_normal_wait_times = {}
+for compareable in compareables:
+    total_prio_wait_times[compareable] = data[compareable][BENCHMARK]["total_prio_wait_time"]
+    total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
+    total_normal_wait_times[compareable] = data[compareable][BENCHMARK]["total_normal_wait_time"]
+    total_normal_wait_times[compareable] = [sum(wait_times) for wait_times in total_normal_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
+
+xticks = map(lambda x: x.split("-")[0], compareables)
+xticks = [label for name in xticks for label in (name + " normal queue", name + " prio queue")]
+values = []
+for comparable in compareables:
+    values.append(total_normal_wait_times[comparable])
+    values.append(total_prio_wait_times[comparable])
+plot_boxplot(values, "Total Wait Time per queue", "Time in queue (ms)", f"queue-wait-times-{BENCHMARK}", xlabel="Queue", xticks=xticks)

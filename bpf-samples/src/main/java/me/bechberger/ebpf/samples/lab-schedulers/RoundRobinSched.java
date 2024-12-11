@@ -27,6 +27,9 @@ public abstract class RoundRobinSched extends BPFProgram implements Scheduler, R
     @Option(names = "--verbose")
     boolean verbose = false;
 
+    @Option(names = "--slice_time_prio")
+    long slice_time_prio_setting = 20000000;
+
     // Default is 20 milion (ns)
     @Option(names = "--slice_time")
     long slice_time_setting = 20000000;
