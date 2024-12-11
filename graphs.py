@@ -13,18 +13,24 @@ compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty
 FILTER_FIRST_N = 30
 
 
-BENCHMARK = "reactors"
+BENCHMARK = "dotty"
 DATA_FOLDER = "zdata/"
 # Ensure the necessary folders exist
 os.makedirs(f"{DATA_FOLDER}/graphs", exist_ok=True)
 
-def plot_boxplot(data, title, ylabel, filename):
+def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.figure(figsize=(10, 6))
     plt.boxplot(data)
-    plt.xlabel('Scheduler')
+    if xlabel is None:
+        plt.xlabel('Scheduler')
+    else:
+        plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.xticks(range(1, len(compareables) + 1), map(lambda x: x.split("-")[0], compareables), rotation=70)
+    if xticks is None:
+        plt.xticks(range(1, len(compareables) + 1), map(lambda x: x.split("-")[0], compareables), rotation=70)
+    else:
+        plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(f"{DATA_FOLDER}/graphs/boxplot-{filename}.png")
@@ -127,5 +133,10 @@ for compareable in compareables:
     total_normal_wait_times[compareable] = data[compareable][BENCHMARK]["total_normal_wait_time"]
     total_normal_wait_times[compareable] = [sum(wait_times) for wait_times in total_normal_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
-plot_boxplot([total_prio_wait_times[comparable] for comparable in compareables], "Total Prio Wait Time", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
-plot_boxplot([total_normal_wait_times[comparable] for comparable in compareables], "Total Prio Wait Time", "Time (ms)", f"total-normal-wait-times-{BENCHMARK}")
+xticks = map(lambda x: x.split("-")[0], compareables)
+xticks = [label for name in xticks for label in (name + " normal queue", name + " prio queue")]
+values = []
+for comparable in compareables:
+    values.append(total_normal_wait_times[comparable])
+    values.append(total_prio_wait_times[comparable])
+plot_boxplot(values, "Total Wait Time per queue", "Time in queue (ms)", f"queue-wait-times-{BENCHMARK}", xlabel="Queue", xticks=xticks)
