@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 # ALL COMPAREABLES
 compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
 
-
+FILTER_FIRST_N = 30
 
 
 BENCHMARK = "reactors"
@@ -83,7 +83,7 @@ compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty
 total_enqueues = {}
 for compareable in compareables:
     total_enqueues[compareable] = data[compareable][BENCHMARK]["total_enqueues"]
-    total_enqueues[compareable] = [sum(enqueues) for enqueues in total_enqueues[compareable] if len(enqueues) > 5]
+    total_enqueues[compareable] = [sum(enqueues) for enqueues in total_enqueues[compareable] if len(enqueues) > FILTER_FIRST_N]
 
 plot_boxplot([total_enqueues[compareable] for compareable in compareables], "Total Enqueues", "Enqueues", f"total-enqueues-{BENCHMARK}")
 
@@ -91,7 +91,7 @@ plot_boxplot([total_enqueues[compareable] for compareable in compareables], "Tot
 total_wait_times = {}
 for compareable in compareables:
     total_wait_times[compareable] = data[compareable][BENCHMARK]["total_wait_times"]
-    total_wait_times[compareable] = [sum(wait_times) for wait_times in total_wait_times[compareable] if len(wait_times) > 5]
+    total_wait_times[compareable] = [sum(wait_times) for wait_times in total_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
 plot_boxplot([total_wait_times[compareable] for compareable in compareables], "Total Wait Time", "Time (ms)", f"total-wait-times-{BENCHMARK}")
 
@@ -104,7 +104,7 @@ compareables = ["PrioSchedWeightedAvg-dotty+reactors-30", "IOPrioSched-dotty+rea
 total_prio_enqueues = {}
 for compareable in compareables:
     total_prio_enqueues[compareable] = data[compareable][BENCHMARK]["total_prio_enqueues"]
-    total_prio_enqueues[compareable] = [sum(enqueues) for enqueues in total_prio_enqueues[compareable] if len(enqueues) > 5]
+    total_prio_enqueues[compareable] = [sum(enqueues) for enqueues in total_prio_enqueues[compareable] if len(enqueues) > FILTER_FIRST_N]
 
 percentage_prio_enqueues = [[prio_enqueue/total_enqueue for prio_enqueue, total_enqueue in zip(total_prio_enqueues[compareable], total_enqueues[compareable])] for compareable in compareables]
 plot_boxplot(percentage_prio_enqueues, "Total Prio Enqueues (%)", "Enqueues", f"total-prio-enqueues-{BENCHMARK}")
@@ -113,7 +113,19 @@ plot_boxplot(percentage_prio_enqueues, "Total Prio Enqueues (%)", "Enqueues", f"
 total_prio_wait_times = {}
 for compareable in compareables:
     total_prio_wait_times[compareable] = data[compareable][BENCHMARK]["total_prio_wait_time"]
-    total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > 5]
+    total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
 percentage_prio_wait_times = [[prio_wait/total_wait for prio_wait, total_wait in zip(total_prio_wait_times[compareable], total_wait_times[compareable])] for compareable in compareables]
-plot_boxplot(percentage_prio_wait_times, "Total Prio Wait Time (%)", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
+# plot_boxplot(percentage_prio_wait_times, "Total Prio Wait Time (%)", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
+
+# make box plot for normal and prio wait time
+total_prio_wait_times = {}
+total_normal_wait_times = {}
+for compareable in compareables:
+    total_prio_wait_times[compareable] = data[compareable][BENCHMARK]["total_prio_wait_time"]
+    total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
+    total_normal_wait_times[compareable] = data[compareable][BENCHMARK]["total_normal_wait_time"]
+    total_normal_wait_times[compareable] = [sum(wait_times) for wait_times in total_normal_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
+
+plot_boxplot([total_prio_wait_times[comparable] for comparable in compareables], "Total Prio Wait Time", "Time (ms)", f"total-prio-wait-times-{BENCHMARK}")
+plot_boxplot([total_normal_wait_times[comparable] for comparable in compareables], "Total Prio Wait Time", "Time (ms)", f"total-normal-wait-times-{BENCHMARK}")
