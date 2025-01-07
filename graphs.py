@@ -1,6 +1,7 @@
 import os
 import json
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # LIST OF WHAT WE WANT:
 # box plot total times
@@ -10,10 +11,9 @@ import matplotlib.pyplot as plt
 # ALL COMPAREABLES
 compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
 
-FILTER_FIRST_N = 30
+invalid_compareables = []
 
-
-BENCHMARK = "dotty"
+BENCHMARK = "reactors"
 DATA_FOLDER = "zdata/"
 # Ensure the necessary folders exist
 os.makedirs(f"{DATA_FOLDER}/graphs", exist_ok=True)
@@ -28,7 +28,7 @@ def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.ylabel(ylabel)
     plt.title(title)
     if xticks is None:
-        plt.xticks(range(1, len(compareables) + 1), map(lambda x: x.split("-")[0], compareables), rotation=70)
+    plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
     else:
         plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
@@ -47,16 +47,21 @@ def plot_pdf(data, title, xlabel, filename):
     plt.savefig(f"{DATA_FOLDER}/graphs/pdf-{filename}.png")
     plt.close()
 
-
 # load data for each scheduler
 data = {}
 for compareable in compareables:
     filename = f"{DATA_FOLDER}{compareable}/results.json"
-    with open(filename, 'r') as json_file:
-        data[compareable] = json.load(json_file)
+    try:
+        with open(filename, 'r') as json_file:
+            data[compareable] = json.load(json_file)
+    except:
+        invalid_compareables.append(compareable)
+        print(f"Failed to load {filename}")
 
+# Filter out invalid compareables
+valid_compareables = [c for c in compareables if c not in invalid_compareables]
 # filter out first 10 of dotty
-for compareable in compareables:
+for compareable in valid_compareables:
     data[compareable][BENCHMARK]["times"] = data[compareable][BENCHMARK]["times"][15:]
     data[compareable][BENCHMARK]["total_wait_times"] = data[compareable][BENCHMARK]["total_wait_times"][15:]
     data[compareable][BENCHMARK]["total_enqueues"] = data[compareable][BENCHMARK]["total_enqueues"][15:]
@@ -65,59 +70,52 @@ for compareable in compareables:
     data[compareable][BENCHMARK]["total_normal_wait_time"] = data[compareable][BENCHMARK]["total_normal_wait_time"][15:]
     data[compareable][BENCHMARK]["total_normal_enqueues"] = data[compareable][BENCHMARK]["total_normal_enqueues"][15:]
 
-
 ####################################
 # TOTAL TIMES
 ####################################
-compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
-
 # make box plot for total times
 total_times = {}
-for compareable in compareables:
+for compareable in valid_compareables:
     total_times[compareable] = data[compareable][BENCHMARK]["times"]
 
-plot_boxplot([total_times[compareable] for compareable in compareables], "Total Time", "Time (ms)", f"total-times-{BENCHMARK}")
-
-
+plot_boxplot([total_times[compareable] for compareable in valid_compareables], "Total Time", "Time (ms)", f"total-times-{BENCHMARK}")
 
 ####################################
 # TOTAL WAIT TIMES / ENQUEUES
 ####################################
-compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "IOPrioSched-dotty+reactors-30"]
-
 # make box plot for total enqueues
 total_enqueues = {}
-for compareable in compareables:
+for compareable in valid_compareables:
     total_enqueues[compareable] = data[compareable][BENCHMARK]["total_enqueues"]
     total_enqueues[compareable] = [sum(enqueues) for enqueues in total_enqueues[compareable] if len(enqueues) > FILTER_FIRST_N]
 
-plot_boxplot([total_enqueues[compareable] for compareable in compareables], "Total Enqueues", "Enqueues", f"total-enqueues-{BENCHMARK}")
+plot_boxplot([total_enqueues[compareable] for compareable in valid_compareables], "Total Enqueues", "Enqueues", f"total-enqueues-{BENCHMARK}")
 
 # make box plot for total wait times
 total_wait_times = {}
-for compareable in compareables:
+for compareable in valid_compareables:
     total_wait_times[compareable] = data[compareable][BENCHMARK]["total_wait_times"]
     total_wait_times[compareable] = [sum(wait_times) for wait_times in total_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
-plot_boxplot([total_wait_times[compareable] for compareable in compareables], "Total Wait Time", "Time (ms)", f"total-wait-times-{BENCHMARK}")
+plot_boxplot([total_wait_times[compareable] for compareable in valid_compareables], "Total Wait Time", "Time (ms)", f"total-wait-times-{BENCHMARK}")
 
 ####################################
 # TOTAL PRIO ENQUEUES / WAIT TIMES
 ####################################
-compareables = ["PrioSchedWeightedAvg-dotty+reactors-30", "IOPrioSched-dotty+reactors-30"]
+prio_compareables = [c for c in valid_compareables if "Prio" in c]
 
 # make box plot for % prio enqueues
 total_prio_enqueues = {}
-for compareable in compareables:
+for compareable in prio_compareables:
     total_prio_enqueues[compareable] = data[compareable][BENCHMARK]["total_prio_enqueues"]
     total_prio_enqueues[compareable] = [sum(enqueues) for enqueues in total_prio_enqueues[compareable] if len(enqueues) > FILTER_FIRST_N]
 
-percentage_prio_enqueues = [[prio_enqueue/total_enqueue for prio_enqueue, total_enqueue in zip(total_prio_enqueues[compareable], total_enqueues[compareable])] for compareable in compareables]
+percentage_prio_enqueues = [[prio_enqueue/total_enqueue for prio_enqueue, total_enqueue in zip(total_prio_enqueues[compareable], total_enqueues[compareable])] for compareable in prio_compareables]
 plot_boxplot(percentage_prio_enqueues, "Total Prio Enqueues (%)", "Enqueues", f"total-prio-enqueues-{BENCHMARK}")
 
 # make box plot for % prio wait times
 total_prio_wait_times = {}
-for compareable in compareables:
+for compareable in prio_compareables:
     total_prio_wait_times[compareable] = data[compareable][BENCHMARK]["total_prio_wait_time"]
     total_prio_wait_times[compareable] = [sum(wait_times) for wait_times in total_prio_wait_times[compareable] if len(wait_times) > FILTER_FIRST_N]
 
