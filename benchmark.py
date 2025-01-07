@@ -14,9 +14,9 @@ import seaborn as sns
 
 SCHEDULERS = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", "FIFOScheduler", None]
 # SCHEDULER = available_schedulers[0]
-SCHEDULER_FLAGS = [["--slice_time_prio=10000000"]]
-ITERATIONS = 1
-BENCHMARKS = ["page-rank", "db-shootout"]
+SCHEDULER_FLAGS = [["--slice_time_prio=10000000"],["--slice_time_prio=5000000"],["--slice_time_prio=20000000"], ["--slice_time_prio=2500000"], ["--slice_time_prio=40000000"], ["--slice_time_prio=80000000"]]
+ITERATIONS = 30
+BENCHMARKS = ["dotty", "reactors", "page-rank", "db-shootout"]
 BUILD = False
 DATA_FOLDER = "zdata/"
 
@@ -38,6 +38,10 @@ def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
 
   for BENCHMARK in BENCHMARKS:
     experiment_name = f"{BENCHMARK}-{ITERATIONS}-{SCHEDULER}-{"".join(FLAGS)}"
+
+    if os.path.exists(f'{DATA_FOLDER}{experiment_name}.json'):
+      print(f"Skipping {BENCHMARK} with {SCHEDULER} and flags {FLAGS} as results already exist.")
+      continue
 
     print(f"Running {BENCHMARK} with {SCHEDULER} and flags {FLAGS}")
 
@@ -81,15 +85,6 @@ def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
               benchmark_output.append(benchmark_line.strip() + "\n")
               f.write(f"Benchmark: {benchmark_line}")
 
-              # if "dotty (scala)" in benchmark_line and "started ===" in benchmark_line:
-              #   current_benchmark = "dotty"
-              # elif "reactors (concurrency)" in benchmark_line and "started ===" in benchmark_line:
-              #   current_benchmark = "reactors"
-              # elif "page-rank (apache-spark)" in benchmark_line and "started ===" in benchmark_line:
-              #   current_benchmark = "page-rank"
-              # elif "db-shootout (database)" in benchmark_line and "started ===" in benchmark_line:
-              #   current_benchmark = "db-shootout"
-
               if "started ===" in benchmark_line:
                 benchmark_started = True
 
@@ -103,6 +98,8 @@ def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
                 total_prio_enqueues.append([])
                 total_normal_wait_time.append([])
                 total_normal_enqueues.append([])
+
+                benchmark_started = False
               
         # Truncate the output to fit within the screen
         max_lines = console.size.height - 4  # Adjust based on your terminal size
@@ -137,7 +134,7 @@ def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
         truncated_scheduler_output = Text("\n".join(scheduler_output_str.splitlines()[-max_lines:]))
         truncated_benchmark_output = Text("\n".join(str(benchmark_output).splitlines()[-max_lines:]))
 
-        live.update(Columns([Panel(truncated_benchmark_output, title="Benchmark"), Panel(truncated_scheduler_output, title="Scheduler")]))
+        live.update(Columns([Panel(truncated_benchmark_output, title="Benchmark"), Panel(truncated_scheduler_output, title="Scheduler" + (" (tracking)" if benchmark_started else ""))]))
 
         if benchmark_process.poll() is not None:
           break
