@@ -9,7 +9,9 @@ import seaborn as sns
 # box plot total wait times
 
 # ALL COMPAREABLES
-compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
+# compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
+compareables = ["all-15-IOPrioSched", "all-15-None", "all-15-PrioSchedWeightedAvg", "all-15-PrioSchedWeightedAvgNoLogs", "all-15-RoundRobinSched"]
+
 
 invalid_compareables = []
 
@@ -28,7 +30,7 @@ def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.ylabel(ylabel)
     plt.title(title)
     if xticks is None:
-    plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
+        plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
     else:
         plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
@@ -138,3 +140,5 @@ for comparable in compareables:
     values.append(total_normal_wait_times[comparable])
     values.append(total_prio_wait_times[comparable])
 plot_boxplot(values, "Total Wait Time per queue", "Time in queue (ms)", f"queue-wait-times-{BENCHMARK}", xlabel="Queue", xticks=xticks)
+
+plot_boxplot

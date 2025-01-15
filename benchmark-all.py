@@ -10,10 +10,11 @@ import json
 import argparse
 import os, sys
 
-SCHEDULERS = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", None]
+# SCHEDULERS = ["SampleScheduler", "RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", None, "SampleScheduler"]
+SCHEDULERS = ["SampleScheduler", "SampleScheduler", "IOPrioSched", "PrioSchedWeightedAvg"]
+SCHEDULER_FLAGS = [["--fifo"], [], ["--slice_time_prio=10000000"], ["--slice_time_prio=10000000"]]
 # SCHEDULER = available_schedulers[0]
 # SCHEDULER_FLAGS = [["--slice_time_prio=10000000"],["--slice_time_prio=5000000"],["--slice_time_prio=20000000"], ["--slice_time_prio=2500000"], ["--slice_time_prio=40000000"], ["--slice_time_prio=80000000"]]
-SCHEDULER_FLAGS = []
 ITERATIONS = 15
 BENCHMARKS = ["all"]
 BUILD = False
@@ -40,6 +41,8 @@ def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
 
   for BENCHMARK in BENCHMARKS:
     experiment_name = f"{BENCHMARK}-{ITERATIONS}-{SCHEDULER}"
+    if len(FLAGS) > 0:
+      experiment_name += f"-{"".join(FLAGS)}"
 
     if os.path.exists(f'{DATA_FOLDER}{experiment_name}.json'):
       print(f"Skipping {BENCHMARK} with {SCHEDULER} and flags {FLAGS} as results already exist.")
@@ -176,9 +179,9 @@ def run_benchmarks_with_scheduler(SCHEDULER, FLAGS):
         json_file.write(json.dumps(results, indent=4))
 
 def run_benchmarks():
-  for SCHEDULER in SCHEDULERS:
+  for SCHEDULER, flags in zip(SCHEDULERS, SCHEDULER_FLAGS):
     try:
-      run_benchmarks_with_scheduler(SCHEDULER, [])
+      run_benchmarks_with_scheduler(SCHEDULER, flags)
     except e:
       print(f"Failed to run {SCHEDULER}")
       print(e)
@@ -187,7 +190,6 @@ def run_benchmarks():
 if __name__ == "__main__":
   if not os.geteuid() == 0:
     sys.exit("Please run with sudo")
-
 
   parser = argparse.ArgumentParser(
                     prog='Benchmark Scheduler',
