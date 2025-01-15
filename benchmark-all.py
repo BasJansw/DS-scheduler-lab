@@ -10,12 +10,19 @@ import json
 import argparse
 import os, sys
 
-# SCHEDULERS = ["SampleScheduler", "RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", None, "SampleScheduler"]
-SCHEDULERS = ["SampleScheduler", "SampleScheduler", "IOPrioSched", "PrioSchedWeightedAvg"]
-SCHEDULER_FLAGS = [["--fifo"], [], ["--slice_time_prio=10000000"], ["--slice_time_prio=10000000"]]
-# SCHEDULER = available_schedulers[0]
-# SCHEDULER_FLAGS = [["--slice_time_prio=10000000"],["--slice_time_prio=5000000"],["--slice_time_prio=20000000"], ["--slice_time_prio=2500000"], ["--slice_time_prio=40000000"], ["--slice_time_prio=80000000"]]
-ITERATIONS = 15
+RR_SLICE=20000000
+IOPRIO_SLICE=20000000
+WEIGHTED_SLICE=20000000
+IOPRIO_PRIO_SLICE=10000000
+WEIGHTED_PRIO_SLICE=10000000
+
+SCHEDULERS = ["SampleScheduler", "SampleScheduler", "RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", None]
+SCHEDULER_FLAGS = [["--fifo"], [], [f"--slice_time={RR_SLICE}"], [f"--slice_time={IOPRIO_SLICE}", f"--slice_time_prio={IOPRIO_PRIO_SLICE}"], [f"--slice_time={WEIGHTED_SLICE}", f"--slice_time_prio={WEIGHTED_PRIO_SLICE}"], []]
+if len(SCHEDULERS) != len(SCHEDULER_FLAGS):
+    print("SCHEDULERS not same len as SCHEDULER_FLAGS")
+    exit(0)
+
+ITERATIONS = 20
 BENCHMARKS = ["all"]
 BUILD = False
 DATA_FOLDER = "zdata/"
