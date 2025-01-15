@@ -9,7 +9,7 @@ import seaborn as sns
 # box plot total wait times
 
 # ALL COMPAREABLES
-compareables = ["all-15-PrioSchedWeightedAvg", "all-15-PrioSchedWeightedAvgNoLogs", "all-15-IOPrioSched", "all-15-RoundRobinSched", "all-15-None"]
+compareables = ["all-15-PrioSchedWeightedAvg", "all-15-SampleScheduler", "all-15-SampleScheduler---fifo", "all-15-PrioSchedWeightedAvgNoLogs", "all-15-IOPrioSched", "all-15-RoundRobinSched", "all-15-None"]
 
 invalid_compareables = []
 
@@ -17,6 +17,7 @@ BENCHMARK = "renaissance"
 DATA_FOLDER = "zdata/"
 # Ensure the necessary folders exist
 os.makedirs(f"{DATA_FOLDER}/graphs", exist_ok=True)
+os.makedirs(f"{DATA_FOLDER}/graphs/renaissance", exist_ok=True)
 
 def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.figure(figsize=(10, 6))
@@ -28,12 +29,12 @@ def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.ylabel(ylabel)
     plt.title(title)
     if xticks is None:
-        plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
+        plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0 if BENCHMARK != "renaissance" else -1], valid_compareables), rotation=70)
     else:
         plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(f"{DATA_FOLDER}/graphs/boxplot-{filename}.png")
+    plt.savefig(f"{DATA_FOLDER}/graphs/{"renaissance/" if BENCHMARK == "renaissance" else ""}boxplot-{filename}.png")
     plt.close()
 
 def plot_pdf(data, title, xlabel, filename):
@@ -77,7 +78,7 @@ valid_compareables = [c for c in compareables if c not in invalid_compareables]
 total_times = {}
 for compareable in valid_compareables:
     if BENCHMARK == "renaissance":
-        total_times[compareable] = data[compareable]["times"][1:]
+        total_times[compareable] = data[compareable]["times"][2:]
     else:
         total_times[compareable] = data[compareable][BENCHMARK]["times"]
 
