@@ -7,16 +7,14 @@ from rich.panel import Panel
 from rich.live import Live
 from rich.text import Text
 import json
-import matplotlib.pyplot as plt
 import argparse
 import os, sys
-import seaborn as sns
 
 SCHEDULERS = ["RoundRobinSched", "IOPrioSched", "PrioSchedWeightedAvg", "PrioSchedWeightedAvgNoLogs", None]
 # SCHEDULER = available_schedulers[0]
 # SCHEDULER_FLAGS = [["--slice_time_prio=10000000"],["--slice_time_prio=5000000"],["--slice_time_prio=20000000"], ["--slice_time_prio=2500000"], ["--slice_time_prio=40000000"], ["--slice_time_prio=80000000"]]
 SCHEDULER_FLAGS = []
-ITERATIONS = 2
+ITERATIONS = 15
 BENCHMARKS = ["all"]
 BUILD = False
 DATA_FOLDER = "zdata/"
