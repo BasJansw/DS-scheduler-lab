@@ -9,11 +9,11 @@ import seaborn as sns
 # box plot total wait times
 
 # ALL COMPAREABLES
-compareables = ["RoundRobinSched-dotty+reactors-30", "PrioSchedWeightedAvg-dotty+reactors-30", "PrioSchedWeightedAvgNoLogs-dotty+reactors-30", "IOPrioSched-dotty+reactors-30", "FIFOScheduler-dotty+reactors-30", "None-dotty+reactors-30"]
+compareables = ["all-15-PrioSchedWeightedAvg", "all-15-PrioSchedWeightedAvgNoLogs", "all-15-IOPrioSched", "all-15-RoundRobinSched", "all-15-None"]
 
 invalid_compareables = []
 
-BENCHMARK = "reactors"
+BENCHMARK = "renaissance"
 DATA_FOLDER = "zdata/"
 # Ensure the necessary folders exist
 os.makedirs(f"{DATA_FOLDER}/graphs", exist_ok=True)
@@ -28,7 +28,7 @@ def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.ylabel(ylabel)
     plt.title(title)
     if xticks is None:
-    plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
+        plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0], valid_compareables), rotation=70)
     else:
         plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
@@ -61,14 +61,14 @@ for compareable in compareables:
 # Filter out invalid compareables
 valid_compareables = [c for c in compareables if c not in invalid_compareables]
 # filter out first 10 of dotty
-for compareable in valid_compareables:
-    data[compareable][BENCHMARK]["times"] = data[compareable][BENCHMARK]["times"][15:]
-    data[compareable][BENCHMARK]["total_wait_times"] = data[compareable][BENCHMARK]["total_wait_times"][15:]
-    data[compareable][BENCHMARK]["total_enqueues"] = data[compareable][BENCHMARK]["total_enqueues"][15:]
-    data[compareable][BENCHMARK]["total_prio_wait_time"] = data[compareable][BENCHMARK]["total_prio_wait_time"][15:]
-    data[compareable][BENCHMARK]["total_prio_enqueues"] = data[compareable][BENCHMARK]["total_prio_enqueues"][15:]
-    data[compareable][BENCHMARK]["total_normal_wait_time"] = data[compareable][BENCHMARK]["total_normal_wait_time"][15:]
-    data[compareable][BENCHMARK]["total_normal_enqueues"] = data[compareable][BENCHMARK]["total_normal_enqueues"][15:]
+# for compareable in valid_compareables:
+#     data[compareable][BENCHMARK]["times"] = data[compareable][BENCHMARK]["times"][15:]
+#     data[compareable][BENCHMARK]["total_wait_times"] = data[compareable][BENCHMARK]["total_wait_times"][15:]
+#     data[compareable][BENCHMARK]["total_enqueues"] = data[compareable][BENCHMARK]["total_enqueues"][15:]
+#     data[compareable][BENCHMARK]["total_prio_wait_time"] = data[compareable][BENCHMARK]["total_prio_wait_time"][15:]
+#     data[compareable][BENCHMARK]["total_prio_enqueues"] = data[compareable][BENCHMARK]["total_prio_enqueues"][15:]
+#     data[compareable][BENCHMARK]["total_normal_wait_time"] = data[compareable][BENCHMARK]["total_normal_wait_time"][15:]
+#     data[compareable][BENCHMARK]["total_normal_enqueues"] = data[compareable][BENCHMARK]["total_normal_enqueues"][15:]
 
 ####################################
 # TOTAL TIMES
@@ -76,9 +76,19 @@ for compareable in valid_compareables:
 # make box plot for total times
 total_times = {}
 for compareable in valid_compareables:
-    total_times[compareable] = data[compareable][BENCHMARK]["times"]
+    if BENCHMARK == "renaissance":
+        total_times[compareable] = data[compareable]["times"][1:]
+    else:
+        total_times[compareable] = data[compareable][BENCHMARK]["times"]
 
 plot_boxplot([total_times[compareable] for compareable in valid_compareables], "Total Time", "Time (ms)", f"total-times-{BENCHMARK}")
+
+if BENCHMARK == "renaissance":
+    for key in data[valid_compareables[0]].keys():
+        if key != "times":
+            key_data = {compareable: data[compareable][key]["times"][1:] for compareable in valid_compareables}
+            plot_boxplot([key_data[compareable] for compareable in valid_compareables], f"{key.replace('_', ' ').title()}", key.replace('_', ' ').title(), f"{key}-{BENCHMARK}")
+    exit()
 
 ####################################
 # TOTAL WAIT TIMES / ENQUEUES
@@ -138,3 +148,5 @@ for comparable in compareables:
     values.append(total_normal_wait_times[comparable])
     values.append(total_prio_wait_times[comparable])
 plot_boxplot(values, "Total Wait Time per queue", "Time in queue (ms)", f"queue-wait-times-{BENCHMARK}", xlabel="Queue", xticks=xticks)
+
+plot_boxplot
