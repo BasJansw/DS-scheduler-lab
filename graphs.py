@@ -9,7 +9,23 @@ import seaborn as sns
 # box plot total wait times
 
 # ALL COMPAREABLES
-compareables = ["all-15-PrioSchedWeightedAvg", "all-15-SampleScheduler", "all-15-SampleScheduler---fifo", "all-15-PrioSchedWeightedAvgNoLogs", "all-15-IOPrioSched", "all-15-RoundRobinSched", "all-15-None"]
+
+# run this one for the first comparison
+# compareables = ["all-15-SampleScheduler", "all-15-SampleScheduler---fifo", "all-15-None"]
+
+# compareables = ["all-15-PrioSchedWeightedAvg---slice_time_prio=20000000", "all-15-SampleScheduler", "all-15-SampleScheduler---fifo", "all-15-PrioSchedWeightedAvgNoStarvation---slice_time_prio=20000000", "all-15-IOPrioSched---slice_time_prio=20000000", "all-15-RoundRobinSched---slice_time_prio=20000000"]
+compareables = ["all-15-PrioSchedWeightedAvg---slice_time_prio=20000000", "all-15-SampleScheduler", "all-15-SampleScheduler---fifo", "all-15-PrioSchedWeightedAvgNoStarvation---slice_time_prio=20000000", "all-15-IOPrioSched---slice_time_prio=20000000"]
+# compareables = ["all-15-PrioSchedWeightedAvg---slice_time_prio=20000000", "all-15-PrioSchedWeightedAvgNoStarvation---slice_time_prio=20000000", "all-15-IOPrioSched---slice_time_prio=20000000", "all-15-RoundRobinSched---slice_time_prio=20000000"]
+
+value_mapping= {
+    "all-15-PrioSchedWeightedAvg---slice_time_prio=20000000": "PrioSchedWeightedAvg",
+    "all-15-PrioSchedWeightedAvgNoStarvation---slice_time_prio=20000000": "PrioSchedWeightedAvgNoStarvation",
+    "all-15-IOPrioSched---slice_time_prio=20000000": "IOPrioSched",
+    "all-15-RoundRobinSched---slice_time_prio=20000000": "RoundRobinSched",
+    "all-15-SampleScheduler---fifo": "SampleSchedulerFIFO",
+    "all-15-SampleScheduler": "SampleScheduler",
+    "all-15-None": "EEVDF"
+}
 
 invalid_compareables = []
 
@@ -29,7 +45,7 @@ def plot_boxplot(data, title, ylabel, filename, xticks=None, xlabel=None):
     plt.ylabel(ylabel)
     plt.title(title)
     if xticks is None:
-        plt.xticks(range(1, len(valid_compareables) + 1), map(lambda x: x.split("-")[0 if BENCHMARK != "renaissance" else -1], valid_compareables), rotation=70)
+        plt.xticks(range(1, len(valid_compareables) + 1), [value_mapping[c] for c in valid_compareables], rotation=70)
     else:
         plt.xticks(range(1, len(xticks) + 1), xticks, rotation=70)
     plt.grid(True)
@@ -82,12 +98,21 @@ for compareable in valid_compareables:
     else:
         total_times[compareable] = data[compareable][BENCHMARK]["times"]
 
+# Remove outliers above 75%
+import numpy as np
+for compareable in valid_compareables:
+    q75 = np.percentile(total_times[compareable], 75)
+    total_times[compareable] = [time for time in total_times[compareable] if time <= q75]
+
 plot_boxplot([total_times[compareable] for compareable in valid_compareables], "Total Time", "Time (ms)", f"total-times-{BENCHMARK}")
 
 if BENCHMARK == "renaissance":
     for key in data[valid_compareables[0]].keys():
         if key != "times":
             key_data = {compareable: data[compareable][key]["times"][1:] for compareable in valid_compareables}
+            for compareable in valid_compareables:
+                q75 = np.percentile(key_data[compareable], 75)
+                key_data[compareable] = [time for time in key_data[compareable] if time <= q75]
             plot_boxplot([key_data[compareable] for compareable in valid_compareables], f"{key.replace('_', ' ').title()}", key.replace('_', ' ').title(), f"{key}-{BENCHMARK}")
     exit()
 
